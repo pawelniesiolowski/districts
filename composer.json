@@ -1,0 +1,22 @@
+{
+    "name": "pawel/districts",
+    "description": "An application that gets data about districts",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "pawelniesiolowski",
+            "email": "pavel.niesiolowski@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Districts\\": ["app/", "core/"]
+        }
+    },
+    "require": {}
+}
+
+
+
+
