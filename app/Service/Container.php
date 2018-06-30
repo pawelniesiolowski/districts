@@ -7,6 +7,7 @@ class Container
 {
     private static $instance;
     private $PDOConnection;
+    private $dataMapper;
 
     private function __construct() {}
 
@@ -18,11 +19,19 @@ class Container
         return self::$instance;
     }
 
-    public function getPDOConnection()
+    public function getDistrictDataMapper(): DistrictDataMapper
+    {
+        if ($this->dataMapper === null) {
+            $this->dataMapper = new DistrictDataMapper($this->getPDO());
+        }
+        return $this->dataMapper;
+    }
+
+    private function getPDO(): \PDO
     {
         if ($this->PDOConnection === null) {
             $this->PDOConnection = new PDOConnection();
         }
-        return $this->PDOConnection;
+        return $this->PDOConnection->getConnection();
     }
 }

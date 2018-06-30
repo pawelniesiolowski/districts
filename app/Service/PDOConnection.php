@@ -3,7 +3,7 @@
 namespace Districts\Service;
 
 
-class PDOConnection implements ConnectionInterface
+class PDOConnection
 {
     private $pdo;
 
