@@ -22,8 +22,9 @@ class ConsoleArgsParser implements ParserInterface
         return $this->args;
     }
 
-    public function parse()
+    public function parse(): ParserInterface
     {
         array_shift($this->args);
+        return $this;
     }
 }

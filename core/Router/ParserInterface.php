@@ -7,5 +7,5 @@ interface ParserInterface
 {
     public function getPath();
     public function getParams();
-    public function parse();
+    public function parse(): ParserInterface;
 }

@@ -24,12 +24,13 @@ class UriParser implements ParserInterface
         return $this->args;
     }
 
-    public function parse()
+    public function parse(): ParserInterface
     {
         $this->path = trim($this->path, '/');
         if (!empty($this->args)) {
             $parts=explode('?', $this->path);
             $this->path = $parts[0];
         }
+        return $this;
     }
 }
