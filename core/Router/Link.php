@@ -11,12 +11,14 @@ class Link
     private $controller;
     private $method;
     private $regParam;
+    private $required;
 
-    public function __construct(string $controller, string $method, array $regParam = [])
+    public function __construct(string $controller, string $method, array $regParam = [], bool $required = false)
     {
         $this->controller = $controller;
         $this->method = $method;
         $this->regParam = $regParam;
+        $this->required = $required;
     }
 
     /**
@@ -53,20 +55,21 @@ class Link
      */
     public function matchUrlParamsWithRegExp(array $params)
     {
-        if (count($this->regParam) === 0) {
+        if (count($this->regParam) === 0 || ((count($params) === 0) && ($this->required === false))) {
             return null;
         }
 
-        if (count($params) === 0) {
+        if ((count($params) === 0) && ($this->required === true)) {
             throw new \Exception('Lack of params in given url');
         }
 
         $readyParams = [];
-        for ($i = 0; $i < count($this->regParam); $i++) {
-            if (preg_match($this->regParam[$i], $params[$i])) {
-                $readyParams[] = $params[$i];
+        foreach ($this->regParam as $key => $value) {
+            if (array_key_exists($key, $params) && preg_match($value, $params[$key])) {
+                $readyParams[] = $params[$key];
             }
         }
+
         if (count($readyParams) === 0) {
             throw new \Exception('Wrong params in given url');
         }
