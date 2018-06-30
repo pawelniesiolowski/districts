@@ -9,9 +9,9 @@ CREATE TABLE city (
 
 CREATE TABLE district (
     district_id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    district_name varchar(50) NOT NULL,
-    district_population int NOT NULL,
-    district_area float NOT NULL,
+    name varchar(50) NOT NULL,
+    population int NOT NULL,
+    area float NOT NULL,
     city_id int NOT NULL,
 
     CONSTRAINT district_city_fk
