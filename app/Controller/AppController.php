@@ -18,4 +18,10 @@ class AppController implements ControllerInterface
         Container::getInstance()->getDistrictDataMapper()->delete($id);
         $this->displayMainPage();
     }
+
+    public function save()
+    {
+        Container::getInstance()->getDistrictDataMapper()->insert($_POST);
+        $this->displayMainPage();
+    }
 }

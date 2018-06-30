@@ -26,5 +26,12 @@
         </tr>
         <?php endforeach; ?>
     </table>
+    <form action="./save" method="post">
+        <label>Nazwa<input type="text" name="name"></label>
+        <label>Populacja<input type="number" name="population"></label>
+        <label>Powierzchnia<input type="number" name="area"></label>
+        <label>Miasto<input type="text" name="city_name"></label>
+        <input type="submit" value="Zapisz">
+    </form>
 </body>
 </html>

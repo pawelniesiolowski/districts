@@ -8,7 +8,9 @@ class Container
     private static $instance;
     private $dataMapper;
     private $PDOConnection;
-    private $domainObjectFactory;
+    private $districtFactory;
+    private $selectBuilder;
+    private $insertBuilder;
 
     private function __construct() {}
 
@@ -23,7 +25,12 @@ class Container
     public function getDistrictDataMapper(): DistrictDataMapper
     {
         if ($this->dataMapper === null) {
-            $this->dataMapper = new DistrictDataMapper($this->getPDO(), $this->getDomainObjectFactory());
+            $this->dataMapper = new DistrictDataMapper(
+                $this->getPDO(),
+                $this->getDistrictFactory(),
+                $this->getSelectBuilder(),
+                $this->getInsertBuilder()
+            );
         }
         return $this->dataMapper;
     }
@@ -36,11 +43,27 @@ class Container
         return $this->PDOConnection->getConnection();
     }
 
-    private function getDomainObjectFactory(): DomainObjectFactoryInterface
+    private function getDistrictFactory(): DistrictFactory
     {
-        if ($this->domainObjectFactory === null) {
-            $this->domainObjectFactory = new DistrictFactory();
+        if ($this->districtFactory === null) {
+            $this->districtFactory = new DistrictFactory();
         }
-        return $this->domainObjectFactory;
+        return $this->districtFactory;
+    }
+
+    private function getSelectBuilder(): SelectBuilder
+    {
+        if ($this->selectBuilder === null) {
+            $this->selectBuilder = new SelectBuilder();
+        }
+        return $this->selectBuilder;
+    }
+
+    private function getInsertBuilder(): InsertBuilder
+    {
+        if ($this->insertBuilder === null) {
+            $this->insertBuilder = new InsertBuilder();
+        }
+        return $this->insertBuilder;
     }
 }

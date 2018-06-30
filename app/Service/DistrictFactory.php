@@ -4,11 +4,10 @@ namespace Districts\Service;
 
 
 use Districts\Model\District;
-use Districts\Model\DomainObjectInterface;
 
-class DistrictFactory implements DomainObjectFactoryInterface
+class DistrictFactory
 {
-    public function createDomainObject(array $data): DomainObjectInterface
+    public function createDomainObject(array $data): District
     {
         return new District(
             $data['district_id'],

@@ -6,4 +6,6 @@ $linksCollection->add('', new \Districts\Router\Link('AppController', 'displayMa
 
 $linksCollection->add('delete', new \Districts\Router\Link('AppController', 'delete', ['id' => '/^\d+$/', 'city' => '/[A-Za-z_.]/'], true));
 
+$linksCollection->add('save', new \Districts\Router\Link('AppController', 'save'));
+
 return $linksCollection;
