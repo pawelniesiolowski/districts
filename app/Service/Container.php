@@ -6,14 +6,15 @@ namespace Districts\Service;
 class Container
 {
     private static $instance;
-    private $PDOConnection;
     private $dataMapper;
+    private $PDOConnection;
+    private $domainObjectFactory;
 
     private function __construct() {}
 
     public static function getInstance(): Container
     {
-        if (empty(self::$instance)) {
+        if (self::$instance === null) {
             self::$instance = new self();
         }
         return self::$instance;
@@ -22,7 +23,7 @@ class Container
     public function getDistrictDataMapper(): DistrictDataMapper
     {
         if ($this->dataMapper === null) {
-            $this->dataMapper = new DistrictDataMapper($this->getPDO());
+            $this->dataMapper = new DistrictDataMapper($this->getPDO(), $this->getDomainObjectFactory());
         }
         return $this->dataMapper;
     }
@@ -33,5 +34,13 @@ class Container
             $this->PDOConnection = new PDOConnection();
         }
         return $this->PDOConnection->getConnection();
+    }
+
+    private function getDomainObjectFactory(): DomainObjectFactoryInterface
+    {
+        if ($this->domainObjectFactory === null) {
+            $this->domainObjectFactory = new DistrictFactory();
+        }
+        return $this->domainObjectFactory;
     }
 }

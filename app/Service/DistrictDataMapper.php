@@ -3,12 +3,11 @@
 namespace Districts\Service;
 
 
-use Districts\Model\DomainObjectInterface;
-use Districts\Model\District;
-
 class DistrictDataMapper
 {
     private $pdo;
+
+    private $domainObjectFactory;
 
     private $columns = [
         'district.district_id',
@@ -22,9 +21,10 @@ class DistrictDataMapper
 
     private $join = 'city ON district.city_id = city.city_id';
 
-    public function __construct(\PDO $pdo)
+    public function __construct(\PDO $pdo, DomainObjectFactoryInterface $domainObjectFactory)
     {
         $this->pdo = $pdo;
+        $this->domainObjectFactory = $domainObjectFactory;
     }
 
     public function findAll(string $orderBy = null): array
@@ -38,7 +38,7 @@ class DistrictDataMapper
         $stmt->execute();
         $results = [];
         while ($result = $stmt->fetch()) {
-            $results[] = $this->createDomainObject($result);
+            $results[] = $this->domainObjectFactory->createDomainObject($result);
         }
         $stmt->closeCursor();
         return $results;
@@ -52,16 +52,5 @@ class DistrictDataMapper
         $result = $stmt->execute();
         $stmt->closeCursor();
         return $result;
-    }
-
-    private function createDomainObject(array $data): DomainObjectInterface
-    {
-        return new District(
-            $data['district_id'],
-            $data['name'],
-            $data['population'],
-            $data['area'],
-            $data['city_name']
-        );
     }
 }
