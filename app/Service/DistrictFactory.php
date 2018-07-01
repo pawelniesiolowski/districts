@@ -22,8 +22,4 @@ class DistrictFactory implements DomainObjectFactoryInterface
         );
     }
 
-    public function targetClass(): string
-    {
-        return 'District';
-    }
 }

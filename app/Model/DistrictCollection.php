@@ -8,29 +8,25 @@ use Districts\Service\DomainObjectFactoryInterface;
 class DistrictCollection implements \Iterator, DomainObjectCollectionInterface
 {
     private $rows;
-    private $domainObjects;
-    private $domainObjectFactory;
+    private $districts;
+    private $districtFactory;
     private $total = 0;
     private $pointer = 0;
-    private $targetClass;
 
     /**
      * DistrictCollection constructor.
      * @param array $raw
-     * @param DomainObjectFactoryInterface|null $domainObjectFactory
+     * @param DomainObjectFactoryInterface|null $districtFactory
      * @throws \Exception
      */
-    public function __construct(array $raw = [], DomainObjectFactoryInterface $domainObjectFactory = null)
+    public function __construct(array $raw = [], DomainObjectFactoryInterface $districtFactory = null)
     {
         $this->total = count($raw);
-        if (($this->total > 0) && !isset($domainObjectFactory)) {
+        if (($this->total > 0) && !isset($districtFactory)) {
             throw new \Exception('Data needs object which implements DomainObjectFactoryInterface');
         }
-        if (isset($domainObjectFactory)) {
-            $this->targetClass = $domainObjectFactory->targetClass();
-        }
         $this->rows = $raw;
-        $this->domainObjectFactory = $domainObjectFactory;
+        $this->districtFactory = $districtFactory;
     }
 
     /**
@@ -39,13 +35,7 @@ class DistrictCollection implements \Iterator, DomainObjectCollectionInterface
      */
     public function add(DomainObjectInterface $domainObject)
     {
-        if ($this->targetClass === null) {
-            $this->targetClass = get_class($domainObject);
-        }
-        if (!$domainObject instanceof $this->targetClass) {
-            throw new \Exception("This is {$this->targetClass} collection");
-        }
-        $this->domainObjects[$this->total] = $domainObject;
+        $this->districts[$this->total] = $domainObject;
         $this->total++;
     }
 
@@ -55,10 +45,10 @@ class DistrictCollection implements \Iterator, DomainObjectCollectionInterface
             return null;
         }
         if (isset($this->domainObjects[$number])) {
-            return $this->domainObjects[$number];
+            return $this->districts[$number];
         }
-        $this->domainObjects[$number] = $this->domainObjectFactory->createDomainObject($this->rows[$number]);
-        return $this->domainObjects[$number];
+        $this->districts[$number] = $this->districtFactory->createDomainObject($this->rows[$number]);
+        return $this->districts[$number];
     }
 
     public function current()
@@ -87,10 +77,5 @@ class DistrictCollection implements \Iterator, DomainObjectCollectionInterface
     public function rewind()
     {
         $this->pointer = 0;
-    }
-
-    public function targetClass()
-    {
-        return $this->targetClass;
     }
 }
