@@ -15,7 +15,7 @@ class AppController implements ControllerInterface
         } catch (\Exception $e) {
             exit($e->getMessage());
         }
-        TextFormatter::convertSpecialChars($districts);
+        TextFormatter::convertCollectionSpecialChars($districts);
         return require __DIR__ . '/../../public/templates/main_page.html.php';
     }
 
@@ -28,12 +28,14 @@ class AppController implements ControllerInterface
     public function save()
     {
         $container = Container::getInstance();
-        $districtFormValidator = $container->getDistrictFormValidator();
-        if (!$districtFormValidator->loadData($_POST)->isValid()) {
-            $_SESSION['form_errors'] = $districtFormValidator->getFormErrors();
+        $districtFormMapper = $container->getDistrictFormValidator();
+        if (!$districtFormMapper->loadData($_POST)->isValid()) {
+            $_SESSION['form_data'] = TextFormatter::convertArraySpecialChars($_POST);
+            $_SESSION['form_errors'] = $districtFormMapper->getFormErrors();
         } else {
+            $district = $districtFormMapper->getDomainObject();
             try {
-                Container::getInstance()->getDistrictDataMapper()->insert($_POST);
+                $container->getDistrictDataMapper()->insert($district);
             } catch (\Exception $e) {
                 exit($e->getMessage());
             }

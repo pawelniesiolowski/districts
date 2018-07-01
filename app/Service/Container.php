@@ -23,10 +23,10 @@ class Container
         return self::$instance;
     }
 
-    public function getDistrictFormValidator(): DistrictFormValidator
+    public function getDistrictFormValidator(): DistrictFormMapper
     {
         if ($this->districtFormValidator === null) {
-            $this->districtFormValidator = new DistrictFormValidator();
+            $this->districtFormValidator = new DistrictFormMapper($this->getDistrictFactory());
         }
         return $this->districtFormValidator;
     }

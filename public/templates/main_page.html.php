@@ -27,36 +27,19 @@
         <?php endforeach; ?>
     </table>
     <form action="./save" method="post">
-        <label>Nazwa<input type="text" name="name"></label>
-        <label>Populacja<input type="number" name="population"></label>
-        <label>Powierzchnia<input type="number" name="area"></label>
-        <label>Miasto<input type="text" name="city_name"></label>
+        <label>Nazwa<input type="text" name="name" value="<?= $_SESSION['form_data']['name'] ?? '' ?>"></label>
+        <label>Populacja<input type="number" name="population" value="<?= $_SESSION['form_data']['population'] ?? '' ?>"></label>
+        <label>Powierzchnia<input type="number" name="area" value=""<?= $_SESSION['form_data']['area'] ?? '' ?>"></label>
+        <label>Miasto<input type="text" name="city_name" value=""<?= $_SESSION['form_data']['city_name'] ?? '' ?>"></label>
         <input type="submit" value="Zapisz">
-        <p class="error">
-            <?php
-            if (isset($_SESSION['form_errors']['name'])) {
-                echo $_SESSION['form_errors']['name'];
-            } ?>
-        </p>
-        <p class="error">
-            <?php
-            if (isset($_SESSION['form_errors']['population'])) {
-                echo $_SESSION['form_errors']['population'];
-            } ?>
-        </p>
-        <p class="error">
-            <?php
-            if (isset($_SESSION['form_errors']['area'])) {
-                echo $_SESSION['form_errors']['area'];
-            } ?>
-        </p>
-        <p class="error">
-            <?php
-            if (isset($_SESSION['form_errors']['city_name'])) {
-                echo $_SESSION['form_errors']['city_name'];
-            }
-            unset($_SESSION['form_errors']); ?>
-        </p>
+        <p class="error"><?= $_SESSION['form_errors']['name'] ?? '' ?></p>
+        <p class="error"><?= $_SESSION['form_errors']['population'] ?? '' ?></p>
+        <p class="error"><?= $_SESSION['form_errors']['area'] ?? '' ?></p>
+        <p class="error"><?= $_SESSION['form_errors']['city_name'] ?? '' ?></p>
+        <?php
+        unset($_SESSION['form_data']);
+        unset($_SESSION['form_errors']);
+        ?>
     </form>
 </body>
 </html>

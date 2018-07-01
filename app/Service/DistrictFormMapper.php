@@ -3,19 +3,22 @@
 namespace Districts\Service;
 
 
+use Districts\Model\DomainObjectInterface;
 use Districts\Model\Error;
 
-class DistrictFormValidator implements FormValidatorInterface
+class DistrictFormMapper implements FormMapperInterface
 {
     private $error;
     private $data;
+    private $districtFactory;
 
-    public function __construct()
+    public function __construct(DomainObjectFactoryInterface $districtFactory)
     {
         $this->error = new Error();
+        $this->districtFactory = $districtFactory;
     }
 
-    public function loadData(array $data): FormValidatorInterface
+    public function loadData(array $data): FormMapperInterface
     {
         $this->data = $data;
         return $this;
@@ -39,7 +42,7 @@ class DistrictFormValidator implements FormValidatorInterface
             $this->error->addError('city_name', 'Nazwa miasta musi mieć od 2 do 30 znaków!');
         }
 
-        return (count($this->error->getAllErrors()) === 0);
+        return ((count($this->error->getAllErrors()) === 0));
     }
 
     public function getFormErrors(): array
@@ -57,10 +60,16 @@ class DistrictFormValidator implements FormValidatorInterface
         if (empty($text)) {
             return false;
         }
+        $text = trim($text);
         $stringLength = mb_strlen($text, 'utf-8');
         if ($stringLength < $minLength || $stringLength > $maxLength) {
             return false;
         }
         return true;
+    }
+
+    public function getDomainObject(): DomainObjectInterface
+    {
+        return $this->districtFactory->createDomainObject($this->data);
     }
 }

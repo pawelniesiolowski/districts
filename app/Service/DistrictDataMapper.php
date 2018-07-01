@@ -6,6 +6,7 @@ namespace Districts\Service;
 use Districts\Model\District;
 use Districts\Model\DistrictCollection;
 use Districts\Model\DomainObjectCollectionInterface;
+use Districts\Model\DomainObjectInterface;
 
 class DistrictDataMapper
 {
@@ -91,19 +92,18 @@ class DistrictDataMapper
 
 
     /**
-     * @param array $data
+     * @param DomainObjectInterface $district
      * @return bool
      * @throws \Exception
      */
-    public function insert(array $data): bool
+    public function insert(DomainObjectInterface $district): bool
     {
-        $district = $this->districtFactory->createDomainObject($data);
         if (!$district instanceof District ) {
             throw new \Exception('DistrictDataMapper needs District object');
         }
-        $cityId = $this->checkCityId($data['city_name']);
+        $cityId = $this->checkCityId($district->city);
         if (!$cityId) {
-            $cityId = $this->insertCity($data['city_name']);
+            $cityId = $this->insertCity($district->city);
         }
         $query = $this->insertBuilder->build($this->table, $this->insertColumns);
         $stmt = $this->pdo->prepare($query);
