@@ -63,7 +63,7 @@ class DistrictDataMapper
         $stmt->execute();
 
         $results = [];
-        while ($result = $stmt->fetch()) {
+        while ($result = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $results[] = $this->districtFactory->createDomainObject($result);
         }
         $stmt->closeCursor();
@@ -83,7 +83,7 @@ class DistrictDataMapper
 
     public function insert(array $data): bool
     {
-        $cityId = $this->checkInsertedCityId($data['city_name']);
+        $cityId = $this->checkCityId($data['city_name']);
         if (!$cityId) {
             $cityId = $this->insertCity($data['city_name']);
         }
@@ -98,7 +98,7 @@ class DistrictDataMapper
         return $result;
     }
 
-    private function checkInsertedCityId(string $city)
+    private function checkCityId(string $city)
     {
         $query = $this->selectBuilder
             ->select(['city_id'], 'city')
@@ -107,7 +107,7 @@ class DistrictDataMapper
         $stmt = $this->pdo->prepare($query);
         $stmt->bindParam(':city_name', $city);
         $stmt->execute();
-        $result = $stmt->fetch();
+        $result = $stmt->fetchColumn();
         $stmt->closeCursor();
         return $result;
     }
