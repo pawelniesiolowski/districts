@@ -3,8 +3,9 @@
 namespace Districts\Service;
 
 
-use Districts\Exception\DomainObjectException;
 use Districts\Model\District;
+use Districts\Model\DomainObjectCollection;
+use Districts\Model\DomainObjectCollectionInterface;
 
 class DistrictDataMapper
 {
@@ -50,7 +51,12 @@ class DistrictDataMapper
         $this->insertBuilder = $insertBuilder;
     }
 
-    public function findAll(string $orderBy = null): array
+    /**
+     * @param string|null $orderBy
+     * @return DomainObjectCollectionInterface
+     * @throws \Exception
+     */
+    public function findAll(string $orderBy = null): DomainObjectCollectionInterface
     {
         $this->selectBuilder
             ->select($this->selectColumns, $this->table)
@@ -65,12 +71,12 @@ class DistrictDataMapper
         $stmt = $this->pdo->prepare($query);
         $stmt->execute();
 
-        $results = [];
+        $districtCollection = new DomainObjectCollection();
         while ($result = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $results[] = $this->districtFactory->createDomainObject($result);
+            $districtCollection->add($this->districtFactory->createDomainObject($result));
         }
         $stmt->closeCursor();
-        return $results;
+        return $districtCollection;
     }
 
     public function delete(int $id): bool
@@ -87,13 +93,13 @@ class DistrictDataMapper
     /**
      * @param array $data
      * @return bool
-     * @throws DomainObjectException
+     * @throws \Exception
      */
     public function insert(array $data): bool
     {
         $district = $this->districtFactory->createDomainObject($data);
         if (!$district instanceof District ) {
-            throw new DomainObjectException('DistrictDataMapper needs District object');
+            throw new \Exception('DistrictDataMapper needs District object');
         }
         $cityId = $this->checkCityId($data['city_name']);
         if (!$cityId) {

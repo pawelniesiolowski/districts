@@ -3,12 +3,15 @@
 namespace Districts\Service;
 
 
+use Districts\Model\DomainObjectCollection;
+
 class Container
 {
     private static $instance;
     private $dataMapper;
     private $PDOConnection;
-    private $domainObjectFactory;
+    private $districtFactory;
+    private $domainObjectCollection;
     private $selectBuilder;
     private $insertBuilder;
 
@@ -27,7 +30,7 @@ class Container
         if ($this->dataMapper === null) {
             $this->dataMapper = new DistrictDataMapper(
                 $this->getPDO(),
-                $this->getDomainObjectFactory(),
+                $this->getDistrictFactory(),
                 $this->getSelectBuilder(),
                 $this->getInsertBuilder()
             );
@@ -43,12 +46,12 @@ class Container
         return $this->PDOConnection->getConnection();
     }
 
-    private function getDomainObjectFactory(): DomainObjectFactoryInterface
+    private function getDistrictFactory(): DistrictFactory
     {
-        if ($this->domainObjectFactory === null) {
-            $this->domainObjectFactory = new DistrictFactory();
+        if ($this->districtFactory === null) {
+            $this->districtFactory = new DistrictFactory();
         }
-        return $this->domainObjectFactory;
+        return $this->districtFactory;
     }
 
     private function getSelectBuilder(): SelectBuilder

@@ -4,24 +4,34 @@ namespace Districts\Controller;
 
 
 use Districts\Service\Container;
+use Districts\Service\TextFormatter;
 
 class AppController implements ControllerInterface
 {
     public function displayMainPage(string $orderBy = null)
     {
-        $districts = Container::getInstance()->getDistrictDataMapper()->findAll($orderBy);
-        require __DIR__ . '/../../public/templates/main_page.html.php';
+        try {
+            $districts = Container::getInstance()->getDistrictDataMapper()->findAll($orderBy);
+        } catch (\Exception $e) {
+            exit($e->getMessage());
+        }
+        TextFormatter::convertSpecialChars($districts);
+        return require __DIR__ . '/../../public/templates/main_page.html.php';
     }
 
     public function delete(int $id)
     {
         Container::getInstance()->getDistrictDataMapper()->delete($id);
-        $this->displayMainPage();
+        return header('Location: ./');
     }
 
     public function save()
     {
-        Container::getInstance()->getDistrictDataMapper()->insert($_POST);
-        $this->displayMainPage();
+        try {
+            Container::getInstance()->getDistrictDataMapper()->insert($_POST);
+        } catch (\Exception $e) {
+            exit($e->getMessage());
+        }
+        return header('Location: ./');
     }
 }

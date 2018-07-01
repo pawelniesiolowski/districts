@@ -21,4 +21,9 @@ class DistrictFactory implements DomainObjectFactoryInterface
             $data['city_name']
         );
     }
+
+    public function targetClass(): string
+    {
+        return 'District';
+    }
 }
