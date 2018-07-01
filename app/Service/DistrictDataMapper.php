@@ -3,6 +3,9 @@
 namespace Districts\Service;
 
 
+use Districts\Exception\DomainObjectException;
+use Districts\Model\District;
+
 class DistrictDataMapper
 {
     private $pdo;
@@ -81,17 +84,26 @@ class DistrictDataMapper
     }
 
 
+    /**
+     * @param array $data
+     * @return bool
+     * @throws DomainObjectException
+     */
     public function insert(array $data): bool
     {
+        $district = $this->districtFactory->createDomainObject($data);
+        if (!$district instanceof District ) {
+            throw new DomainObjectException('DistrictDataMapper needs District object');
+        }
         $cityId = $this->checkCityId($data['city_name']);
         if (!$cityId) {
             $cityId = $this->insertCity($data['city_name']);
         }
         $query = $this->insertBuilder->build($this->table, $this->insertColumns);
         $stmt = $this->pdo->prepare($query);
-        $stmt->bindParam(':name',$data['name']);
-        $stmt->bindParam(':population',$data['population'],\PDO::PARAM_INT);
-        $stmt->bindParam(':area',$data['area']);
+        $stmt->bindParam(':name',$district->name);
+        $stmt->bindParam(':population',$district->population,\PDO::PARAM_INT);
+        $stmt->bindParam(':area',$district->area);
         $stmt->bindParam(":city_id",$cityId, \PDO::PARAM_INT);
         $result = $stmt->execute();
         $stmt->closeCursor();

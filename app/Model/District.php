@@ -12,7 +12,7 @@ class District implements DomainObjectInterface
     public $city;
 
     public function __construct(
-        int $id,
+        int $id = null,
         string $name,
         int $population,
         float $area,
