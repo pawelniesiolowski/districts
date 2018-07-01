@@ -32,6 +32,31 @@
         <label>Powierzchnia<input type="number" name="area"></label>
         <label>Miasto<input type="text" name="city_name"></label>
         <input type="submit" value="Zapisz">
+        <p class="error">
+            <?php
+            if (isset($_SESSION['form_errors']['name'])) {
+                echo $_SESSION['form_errors']['name'];
+            } ?>
+        </p>
+        <p class="error">
+            <?php
+            if (isset($_SESSION['form_errors']['population'])) {
+                echo $_SESSION['form_errors']['population'];
+            } ?>
+        </p>
+        <p class="error">
+            <?php
+            if (isset($_SESSION['form_errors']['area'])) {
+                echo $_SESSION['form_errors']['area'];
+            } ?>
+        </p>
+        <p class="error">
+            <?php
+            if (isset($_SESSION['form_errors']['city_name'])) {
+                echo $_SESSION['form_errors']['city_name'];
+            }
+            unset($_SESSION['form_errors']); ?>
+        </p>
     </form>
 </body>
 </html>

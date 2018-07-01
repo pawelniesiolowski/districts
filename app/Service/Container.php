@@ -3,15 +3,13 @@
 namespace Districts\Service;
 
 
-use Districts\Model\DomainObjectCollection;
-
 class Container
 {
     private static $instance;
+    private $districtFormValidator;
     private $dataMapper;
     private $PDOConnection;
     private $districtFactory;
-    private $domainObjectCollection;
     private $selectBuilder;
     private $insertBuilder;
 
@@ -23,6 +21,14 @@ class Container
             self::$instance = new self();
         }
         return self::$instance;
+    }
+
+    public function getDistrictFormValidator(): DistrictFormValidator
+    {
+        if ($this->districtFormValidator === null) {
+            $this->districtFormValidator = new DistrictFormValidator();
+        }
+        return $this->districtFormValidator;
     }
 
     public function getDistrictDataMapper(): DistrictDataMapper

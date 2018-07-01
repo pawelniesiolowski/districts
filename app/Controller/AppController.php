@@ -27,11 +27,18 @@ class AppController implements ControllerInterface
 
     public function save()
     {
-        try {
-            Container::getInstance()->getDistrictDataMapper()->insert($_POST);
-        } catch (\Exception $e) {
-            exit($e->getMessage());
+        $container = Container::getInstance();
+        $districtFormValidator = $container->getDistrictFormValidator();
+        if (!$districtFormValidator->loadData($_POST)->isValid()) {
+            $_SESSION['form_errors'] = $districtFormValidator->getFormErrors();
+        } else {
+            try {
+                Container::getInstance()->getDistrictDataMapper()->insert($_POST);
+            } catch (\Exception $e) {
+                exit($e->getMessage());
+            }
         }
+
         return header('Location: ./');
     }
 }

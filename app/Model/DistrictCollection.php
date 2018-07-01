@@ -5,7 +5,7 @@ namespace Districts\Model;
 
 use Districts\Service\DomainObjectFactoryInterface;
 
-class DomainObjectCollection implements \Iterator, DomainObjectCollectionInterface
+class DistrictCollection implements \Iterator, DomainObjectCollectionInterface
 {
     private $rows;
     private $domainObjects;
@@ -15,7 +15,7 @@ class DomainObjectCollection implements \Iterator, DomainObjectCollectionInterfa
     private $targetClass;
 
     /**
-     * DomainObjectCollection constructor.
+     * DistrictCollection constructor.
      * @param array $raw
      * @param DomainObjectFactoryInterface|null $domainObjectFactory
      * @throws \Exception

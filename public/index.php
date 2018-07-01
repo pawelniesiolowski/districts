@@ -1,4 +1,10 @@
 <?php
+declare(strict_types = 1);
+
+$status = session_status();
+if ($status == PHP_SESSION_NONE) {
+    session_start();
+}
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../core/config.php';

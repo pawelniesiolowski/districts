@@ -10,3 +10,7 @@ table {
 td, th {
     padding: 15px;
 }
+
+p {
+    color: red;
+}

@@ -4,7 +4,7 @@ namespace Districts\Service;
 
 
 use Districts\Model\District;
-use Districts\Model\DomainObjectCollection;
+use Districts\Model\DistrictCollection;
 use Districts\Model\DomainObjectCollectionInterface;
 
 class DistrictDataMapper
@@ -71,7 +71,7 @@ class DistrictDataMapper
         $stmt = $this->pdo->prepare($query);
         $stmt->execute();
 
-        $districtCollection = new DomainObjectCollection();
+        $districtCollection = new DistrictCollection();
         while ($result = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $districtCollection->add($this->districtFactory->createDomainObject($result));
         }
