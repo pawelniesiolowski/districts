@@ -36,7 +36,7 @@ class DistrictDataMapper
 
     public function __construct(
         \PDO $pdo,
-        DistrictFactory $districtFactory,
+        DomainObjectFactoryInterface $districtFactory,
         SelectBuilder $selectBuilder,
         InsertBuilder $insertBuilder
     )

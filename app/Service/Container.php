@@ -8,7 +8,7 @@ class Container
     private static $instance;
     private $dataMapper;
     private $PDOConnection;
-    private $districtFactory;
+    private $domainObjectFactory;
     private $selectBuilder;
     private $insertBuilder;
 
@@ -27,7 +27,7 @@ class Container
         if ($this->dataMapper === null) {
             $this->dataMapper = new DistrictDataMapper(
                 $this->getPDO(),
-                $this->getDistrictFactory(),
+                $this->getDomainObjectFactory(),
                 $this->getSelectBuilder(),
                 $this->getInsertBuilder()
             );
@@ -43,12 +43,12 @@ class Container
         return $this->PDOConnection->getConnection();
     }
 
-    private function getDistrictFactory(): DistrictFactory
+    private function getDomainObjectFactory(): DomainObjectFactoryInterface
     {
-        if ($this->districtFactory === null) {
-            $this->districtFactory = new DistrictFactory();
+        if ($this->domainObjectFactory === null) {
+            $this->domainObjectFactory = new DistrictFactory();
         }
-        return $this->districtFactory;
+        return $this->domainObjectFactory;
     }
 
     private function getSelectBuilder(): SelectBuilder
