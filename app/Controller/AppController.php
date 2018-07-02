@@ -8,10 +8,10 @@ use Districts\Service\TextFormatter;
 
 class AppController implements ControllerInterface
 {
-    public function displayMainPage(string $orderBy = null)
+    public function displayMainPage(string $orderBy = '')
     {
         try {
-            $districts = Container::getInstance()->getDistrictDataMapper()->findAll($orderBy);
+            $districts = Container::getInstance()->getDistrictDataMapper()->findAll([], $orderBy);
         } catch (\Exception $e) {
             exit($e->getMessage());
         }
@@ -35,7 +35,7 @@ class AppController implements ControllerInterface
         } else {
             $district = $districtFormMapper->getDomainObject();
             try {
-                $container->getDistrictDataMapper()->insert($district);
+                $container->getDistrictAnalyzer()->analyzeDomainObject($district);
             } catch (\Exception $e) {
                 exit($e->getMessage());
             }

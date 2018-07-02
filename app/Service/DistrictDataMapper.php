@@ -8,7 +8,7 @@ use Districts\Model\DistrictCollection;
 use Districts\Model\DomainObjectCollectionInterface;
 use Districts\Model\DomainObjectInterface;
 
-class DistrictDataMapper
+class DistrictDataMapper implements DataMapperInterface
 {
     private $pdo;
 
@@ -53,15 +53,29 @@ class DistrictDataMapper
     }
 
     /**
+     * @param array $where
      * @param string|null $orderBy
      * @return DomainObjectCollectionInterface
      * @throws \Exception
      */
-    public function findAll(string $orderBy = null): DomainObjectCollectionInterface
+    public function findAll(array $where = [], string $orderBy = ''): DomainObjectCollectionInterface
     {
         $this->selectBuilder
             ->select($this->selectColumns, $this->table)
             ->join([$this->joinTable], [$this->joinRelation]);
+
+        if (count($where) > 0) {
+
+            $sqlWhereQueries = [];
+            $executeData = [];
+
+            foreach ($where as $key => $value) {
+                $sqlWhereQueries[] = "$key = ?";
+                $executeData[] = $value;
+            }
+
+            $this->selectBuilder->where($sqlWhereQueries);
+        }
 
         $orderBy = $this->createOrderBy($orderBy);
         if (!empty($orderBy)) {
@@ -70,7 +84,8 @@ class DistrictDataMapper
 
         $query = $this->selectBuilder->getQuery();
         $stmt = $this->pdo->prepare($query);
-        $stmt->execute();
+
+        isset($executeData) ? $stmt->execute($executeData) : $stmt->execute();
 
         $districtCollection = new DistrictCollection();
         while ($result = $stmt->fetch(\PDO::FETCH_ASSOC)) {
@@ -115,6 +130,30 @@ class DistrictDataMapper
         $stmt->closeCursor();
         return $result;
     }
+
+    /**
+     * @param DomainObjectInterface $district
+     * @return bool
+     * @throws \Exception
+     */
+    public function update(DomainObjectInterface $district): bool
+    {
+        if (!$district instanceof District ) {
+            throw new \Exception('DistrictDataMapper needs District object');
+        }
+
+        $query = "UPDATE {$this->table} SET population = :population, area = :area WHERE district_id = :id";
+        $stmt = $this->pdo->prepare($query);
+
+        $stmt->bindParam(':population',$district->population,\PDO::PARAM_INT);
+        $stmt->bindParam(':area',$district->area);
+        $stmt->bindParam(":id",$district->id, \PDO::PARAM_INT);
+        $result = $stmt->execute();
+        $stmt->closeCursor();
+        return $result;
+    }
+
+
 
     private function checkCityId(string $city)
     {

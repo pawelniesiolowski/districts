@@ -39,12 +39,12 @@ class DistrictCollection implements \Iterator, DomainObjectCollectionInterface
         $this->total++;
     }
 
-    public function getRow(int $number)
+    public function getRow(int $number): ?DomainObjectInterface
     {
         if ($number < 0 || $number >= $this->total) {
             return null;
         }
-        if (isset($this->domainObjects[$number])) {
+        if (isset($this->districts[$number])) {
             return $this->districts[$number];
         }
         $this->districts[$number] = $this->districtFactory->createDomainObject($this->rows[$number]);

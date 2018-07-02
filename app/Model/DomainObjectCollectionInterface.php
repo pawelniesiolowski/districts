@@ -3,4 +3,6 @@
 namespace Districts\Model;
 
 
-interface DomainObjectCollectionInterface {}
+interface DomainObjectCollectionInterface {
+    public function getRow(int $number): ?DomainObjectInterface;
+}

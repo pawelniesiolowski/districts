@@ -29,7 +29,7 @@
     <form action="./save" method="post">
         <label>Nazwa <input type="text" name="name" value="<?= $_SESSION['form_data']['name'] ?? '' ?>"></label>
         <label>Populacja <input type="number" name="population" value="<?= $_SESSION['form_data']['population'] ?? '' ?>"></label>
-        <label>Powierzchnia <input type="number" name="area" value=""<?= $_SESSION['form_data']['area'] ?? '' ?>"></label>
+        <label>Powierzchnia <input type="text" name="area" value=""<?= $_SESSION['form_data']['area'] ?? '' ?>"></label>
         <label>Miasto <input type="text" name="city_name" value=""<?= $_SESSION['form_data']['city_name'] ?? '' ?>"></label>
         <input type="submit" value="Zapisz">
         <p class="error"><?= $_SESSION['form_errors']['name'] ?? '' ?></p>

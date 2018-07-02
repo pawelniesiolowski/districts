@@ -7,6 +7,7 @@ class Container
 {
     private static $instance;
     private $districtFormValidator;
+    private $districtAnalyzer;
     private $dataMapper;
     private $PDOConnection;
     private $districtFactory;
@@ -29,6 +30,14 @@ class Container
             $this->districtFormValidator = new DistrictFormMapper($this->getDistrictFactory());
         }
         return $this->districtFormValidator;
+    }
+
+    public function getDistrictAnalyzer(): DistrictAnalyzer
+    {
+        if ($this->districtAnalyzer === null) {
+            $this->districtAnalyzer = new DistrictAnalyzer($this->getDistrictDataMapper());
+        }
+        return $this->districtAnalyzer;
     }
 
     public function getDistrictDataMapper(): DistrictDataMapper
