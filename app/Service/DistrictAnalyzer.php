@@ -67,19 +67,39 @@ class DistrictAnalyzer implements DataAnalyzerInterface
         $updateCollection = new DistrictCollection();
 
         foreach ($districtCollection as $district) {
+
+            $equals = false;
+
             foreach ($databaseCollection as $districtFromDatabase) {
-                if (($district->name === $districtFromDatabase->name) &&
-                    (($district->population !== $districtFromDatabase->population) ||
-                        ($district->area !== $districtFromDatabase->area))) {
-                    $updateCollection->add($district);
+
+                if ($district->name === $districtFromDatabase->name) {
+
+                    $equals = true;
+
+                    if (($district->area !== $districtFromDatabase->area) ||
+                        ($district->population !== $districtFromDatabase->population)) {
+
+                        $district->id = $districtFromDatabase->id;
+                        $updateCollection->add($district);
+
+                    }
+
                     break;
                 }
+
+            }
+            if ($equals === false) {
                 $insertCollection->add($district);
             }
+
         }
 
         if (!is_null($insertCollection->getRow(0))) {
             $this->districtDataMapper->insertAll($insertCollection);
+        }
+
+        if (!is_null($updateCollection->getRow(0))) {
+            $this->districtDataMapper->updateAll($updateCollection);
         }
 
 

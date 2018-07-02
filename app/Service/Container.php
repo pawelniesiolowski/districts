@@ -6,6 +6,7 @@ namespace Districts\Service;
 class Container
 {
     private static $instance;
+    private $districtDataParser;
     private $districtFormValidator;
     private $districtAnalyzer;
     private $dataMapper;
@@ -22,6 +23,14 @@ class Container
             self::$instance = new self();
         }
         return self::$instance;
+    }
+
+    public function getDistrictDataParser(): DistrictDataParser
+    {
+        if ($this->districtDataParser === null) {
+            $this->districtDataParser = new DistrictDataParser($this->getDistrictFactory());
+        }
+        return $this->districtDataParser;
     }
 
     public function getDistrictFormValidator(): DistrictFormMapper

@@ -23,15 +23,15 @@ class DistrictDataMapper implements DataMapperInterface
     private $selectColumns = [
         'district.district_id',
         'district.name',
-        'district.population',
         'district.area',
+        'district.population',
         'city.city_name'
     ];
 
     private $insertColumns = [
         'name',
-        'population',
         'area',
+        'population',
         'city_id'
     ];
 
@@ -125,8 +125,8 @@ class DistrictDataMapper implements DataMapperInterface
         $query = $this->insertBuilder->build($this->table, $this->insertColumns);
         $stmt = $this->pdo->prepare($query);
         $stmt->bindParam(':name',$district->name);
-        $stmt->bindParam(':population',$district->population,\PDO::PARAM_INT);
         $stmt->bindParam(':area',$district->area);
+        $stmt->bindParam(':population',$district->population,\PDO::PARAM_INT);
         $stmt->bindParam(":city_id",$cityId, \PDO::PARAM_INT);
         $result = $stmt->execute();
         $stmt->closeCursor();
@@ -161,8 +161,8 @@ class DistrictDataMapper implements DataMapperInterface
             }
 
             $stmt->bindParam(':name',$district->name);
-            $stmt->bindParam(':population',$district->population,\PDO::PARAM_INT);
             $stmt->bindParam(':area',$district->area);
+            $stmt->bindParam(':population',$district->population,\PDO::PARAM_INT);
             $stmt->bindParam(":city_id",$cityId, \PDO::PARAM_INT);
             $result = $stmt->execute();
             $stmt->closeCursor();
@@ -183,11 +183,11 @@ class DistrictDataMapper implements DataMapperInterface
             throw new \Exception('DistrictDataMapper needs District object');
         }
 
-        $query = "UPDATE {$this->table} SET population = :population, area = :area WHERE district_id = :id";
+        $query = "UPDATE {$this->table} SET area = :area, population = :population WHERE district_id = :id";
         $stmt = $this->pdo->prepare($query);
 
-        $stmt->bindParam(':population',$district->population,\PDO::PARAM_INT);
         $stmt->bindParam(':area',$district->area);
+        $stmt->bindParam(':population',$district->population,\PDO::PARAM_INT);
         $stmt->bindParam(":id",$district->id, \PDO::PARAM_INT);
         $result = $stmt->execute();
         $stmt->closeCursor();
@@ -207,12 +207,12 @@ class DistrictDataMapper implements DataMapperInterface
             throw new DomainObjectException('DistrictDataMapper needs DistrictCollection');
         }
 
-        $query = "UPDATE {$this->table} SET population = :population, area = :area WHERE district_id = :id";
+        $query = "UPDATE {$this->table} SET area = :area, population = :population WHERE district_id = :id";
         $stmt = $this->pdo->prepare($query);
 
         foreach ($districtCollection as $district) {
-            $stmt->bindParam(':population',$district->population,\PDO::PARAM_INT);
             $stmt->bindParam(':area',$district->area);
+            $stmt->bindParam(':population',$district->population,\PDO::PARAM_INT);
             $stmt->bindParam(":id",$district->id, \PDO::PARAM_INT);
             if (!$stmt->execute()) {
                 throw new DatabaseException('Failed to insert query');

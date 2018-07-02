@@ -30,12 +30,12 @@ class DistrictFormMapper implements FormMapperInterface
             $this->error->addError('name', 'Nazwa dzielnicy musi mieć od 2 do 30 znaków!');
         }
 
-        if (!filter_var($this->data['population'], FILTER_VALIDATE_FLOAT)) {
-            $this->error->addError('population', 'Pole populacja musi zawierać liczbę!');
-        }
-
         if (!filter_var($this->data['area'], FILTER_VALIDATE_FLOAT)) {
             $this->error->addError('area', 'Pole powierzchnia musi zawierać liczbę!');
+        }
+
+        if (!filter_var($this->data['population'], FILTER_VALIDATE_FLOAT)) {
+            $this->error->addError('population', 'Pole populacja musi zawierać liczbę!');
         }
 
         if (!$this->isValidString($this->data['city_name'], 2, 30)) {

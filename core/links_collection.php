@@ -8,4 +8,6 @@ $linksCollection->add('delete', new \Districts\Router\Link('AppController', 'del
 
 $linksCollection->add('save', new \Districts\Router\Link('AppController', 'save'));
 
+$linksCollection->add('actualize', new \Districts\Router\Link('AppController', 'actualize'));
+
 return $linksCollection;

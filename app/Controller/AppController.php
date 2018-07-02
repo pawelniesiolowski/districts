@@ -3,6 +3,7 @@
 namespace Districts\Controller;
 
 
+use Districts\Model\DataContext;
 use Districts\Service\Container;
 use Districts\Service\TextFormatter;
 
@@ -42,5 +43,27 @@ class AppController implements ControllerInterface
         }
 
         return header('Location: ./');
+    }
+
+    public function actualize()
+    {
+        $container = Container::getInstance();
+        $districtDataParser = $container->getDistrictDataParser();
+        $dataContext = new DataContext(
+            'Gdańsk',
+            'http://www.gdansk.pl/subpages/dzielnice/[dzielnice]/html/dzielnice_mapa_alert.php?id=%d',
+            '/([^^]*)Powierzchnia:([\d,\s]*)[^^]*Liczba\s*ludności:([\d\s]*)/i',
+            1,
+            34,
+            ['district_id', 'name', 'area', 'population', 'city_name']
+        );
+
+        try {
+            $districtCollection = $districtDataParser->parseData($dataContext);
+            $districtAnalyzer = $container->getDistrictAnalyzer();
+            $districtAnalyzer->analyzeDomainObjectCollection($districtCollection);
+        } catch (\Exception $e) {
+            exit($e->getMessage());
+        }
     }
 }

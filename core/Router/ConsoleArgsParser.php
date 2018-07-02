@@ -14,7 +14,7 @@ class ConsoleArgsParser implements ParserInterface
 
     public function getPath(): string
     {
-        return 'console';
+        return $this->args[0];
     }
 
     public function getParams(): array

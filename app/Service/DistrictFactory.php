@@ -20,8 +20,8 @@ class DistrictFactory implements DomainObjectFactoryInterface
         return new District(
             $data['district_id'],
             $data['name'],
-            $data['population'],
             $data['area'],
+            $data['population'],
             $data['city_name']
         );
     }
