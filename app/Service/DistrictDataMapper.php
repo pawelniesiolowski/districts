@@ -3,6 +3,8 @@
 namespace Districts\Service;
 
 
+use Districts\Exception\DatabaseException;
+use Districts\Exception\DomainObjectException;
 use Districts\Model\District;
 use Districts\Model\DistrictCollection;
 use Districts\Model\DomainObjectCollectionInterface;
@@ -108,10 +110,10 @@ class DistrictDataMapper implements DataMapperInterface
 
     /**
      * @param DomainObjectInterface $district
-     * @return bool
+     * @throws DatabaseException
      * @throws \Exception
      */
-    public function insert(DomainObjectInterface $district): bool
+    public function insertOne(DomainObjectInterface $district): void
     {
         if (!$district instanceof District ) {
             throw new \Exception('DistrictDataMapper needs District object');
@@ -128,15 +130,54 @@ class DistrictDataMapper implements DataMapperInterface
         $stmt->bindParam(":city_id",$cityId, \PDO::PARAM_INT);
         $result = $stmt->execute();
         $stmt->closeCursor();
-        return $result;
+        if (!$result) {
+            throw new DatabaseException('Failed to insert query');
+        }
+    }
+
+    /**
+     * @param DomainObjectCollectionInterface $districtCollection
+     * @throws DomainObjectException
+     * @throws DatabaseException
+     */
+    public function insertAll(DomainObjectCollectionInterface $districtCollection): void
+    {
+        if (!$districtCollection instanceof DistrictCollection) {
+            throw new DomainObjectException('DistrictDataMapper needs DistrictCollection');
+        }
+
+        $knownCities = [];
+        $query = $this->insertBuilder->build($this->table, $this->insertColumns);
+        $stmt = $this->pdo->prepare($query);
+
+        foreach ($districtCollection as $district) {
+
+            if (($cityId = array_search($district->city, $knownCities)) === false) {
+                $cityId = $this->checkCityId($district->city);
+                if (!$cityId) {
+                    $cityId = $this->insertCity($district->city);
+                }
+                $knownCities[$cityId] = $district->city;
+            }
+
+            $stmt->bindParam(':name',$district->name);
+            $stmt->bindParam(':population',$district->population,\PDO::PARAM_INT);
+            $stmt->bindParam(':area',$district->area);
+            $stmt->bindParam(":city_id",$cityId, \PDO::PARAM_INT);
+            $result = $stmt->execute();
+            $stmt->closeCursor();
+            if (!$result) {
+                throw new DatabaseException('Failed to insert multiple queries');
+            }
+        }
     }
 
     /**
      * @param DomainObjectInterface $district
-     * @return bool
+     * @throws DatabaseException
      * @throws \Exception
      */
-    public function update(DomainObjectInterface $district): bool
+    public function updateOne(DomainObjectInterface $district): void
     {
         if (!$district instanceof District ) {
             throw new \Exception('DistrictDataMapper needs District object');
@@ -150,10 +191,35 @@ class DistrictDataMapper implements DataMapperInterface
         $stmt->bindParam(":id",$district->id, \PDO::PARAM_INT);
         $result = $stmt->execute();
         $stmt->closeCursor();
-        return $result;
+        if (!$result) {
+            throw new DatabaseException('Failed to insert query');
+        }
     }
 
+    /**
+     * @param DomainObjectCollectionInterface $districtCollection
+     * @throws DomainObjectException
+     * @throws DatabaseException
+     */
+    public function updateAll(DomainObjectCollectionInterface $districtCollection): void
+    {
+        if (!$districtCollection instanceof DistrictCollection) {
+            throw new DomainObjectException('DistrictDataMapper needs DistrictCollection');
+        }
 
+        $query = "UPDATE {$this->table} SET population = :population, area = :area WHERE district_id = :id";
+        $stmt = $this->pdo->prepare($query);
+
+        foreach ($districtCollection as $district) {
+            $stmt->bindParam(':population',$district->population,\PDO::PARAM_INT);
+            $stmt->bindParam(':area',$district->area);
+            $stmt->bindParam(":id",$district->id, \PDO::PARAM_INT);
+            if (!$stmt->execute()) {
+                throw new DatabaseException('Failed to insert query');
+            }
+            $stmt->closeCursor();
+        }
+    }
 
     private function checkCityId(string $city)
     {

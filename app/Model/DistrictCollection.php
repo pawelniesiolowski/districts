@@ -39,6 +39,10 @@ class DistrictCollection implements \Iterator, DomainObjectCollectionInterface
         $this->total++;
     }
 
+    /**
+     * @param int $number
+     * @return District|null
+     */
     public function getRow(int $number): ?DomainObjectInterface
     {
         if ($number < 0 || $number >= $this->total) {

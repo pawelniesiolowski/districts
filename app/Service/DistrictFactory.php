@@ -8,6 +8,10 @@ use Districts\Model\DomainObjectInterface;
 
 class DistrictFactory implements DomainObjectFactoryInterface
 {
+    /**
+     * @param array $data
+     * @return District
+     */
     public function createDomainObject(array $data): DomainObjectInterface
     {
         if (!array_key_exists('district_id', $data)) {

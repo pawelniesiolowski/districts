@@ -9,6 +9,8 @@ use Districts\Model\DomainObjectInterface;
 interface DataMapperInterface
 {
     public function findAll(array $where = [], string $orderBy = ''): DomainObjectCollectionInterface;
-    public function insert(DomainObjectInterface $district): bool;
-    public function update(DomainObjectInterface $district): bool;
+    public function insertOne(DomainObjectInterface $district): void;
+    public function updateOne(DomainObjectInterface $district): void;
+    public function insertAll(DomainObjectCollectionInterface $district): void;
+    public function updateAll(DomainObjectCollectionInterface $district): void;
 }
