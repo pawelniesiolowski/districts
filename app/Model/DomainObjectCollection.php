@@ -6,7 +6,7 @@ namespace Districts\Model;
 use Districts\Exception\DomainObjectException;
 use Districts\Service\DomainObjectFactoryInterface;
 
-abstract class Collection
+abstract class DomainObjectCollection
 {
     private $rows;
     private $domainObjects;
@@ -15,7 +15,7 @@ abstract class Collection
     private $pointer = 0;
 
     /**
-     * Collection constructor.
+     * DomainObjectCollection constructor.
      * @param array $raw
      * @param DomainObjectFactoryInterface|null $domainObjectFactory
      * @throws DomainObjectException
