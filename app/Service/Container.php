@@ -13,6 +13,7 @@ class Container
     private $PDOConnection;
     private $districtFactory;
     private $selectBuilder;
+    private $updateBuilder;
     private $insertBuilder;
 
     private function __construct() {}
@@ -56,6 +57,7 @@ class Container
                 $this->getPDO(),
                 $this->getDistrictFactory(),
                 $this->getSelectBuilder(),
+                $this->getUpdateBuilder(),
                 $this->getInsertBuilder()
             );
         }
@@ -84,6 +86,14 @@ class Container
             $this->selectBuilder = new SelectBuilder();
         }
         return $this->selectBuilder;
+    }
+
+    private function getUpdateBuilder(): UpdateBuilder
+    {
+        if ($this->updateBuilder === null) {
+            $this->updateBuilder = new UpdateBuilder();
+        }
+        return $this->updateBuilder;
     }
 
     private function getInsertBuilder(): InsertBuilder

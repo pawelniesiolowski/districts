@@ -5,13 +5,12 @@ namespace Districts\Service;
 
 use Districts\Model\DataContext;
 use Districts\Model\DistrictCollection;
-use Districts\Model\DomainObjectCollectionInterface;
 
-class DistrictDataParser implements DataParserInterface
+class DistrictDataParser
 {
     private $districtFactory;
 
-    public function __construct(DomainObjectFactoryInterface $districtFactory)
+    public function __construct(DistrictFactoryInterface $districtFactory)
     {
         $this->districtFactory = $districtFactory;
     }
@@ -19,9 +18,9 @@ class DistrictDataParser implements DataParserInterface
     /**
      * @param DataContext $dataContext
      * @throws \Exception
-     * @return DomainObjectCollectionInterface
+     * @return DistrictCollection
      */
-    public function parseData(DataContext $dataContext): DomainObjectCollectionInterface
+    public function parseData(DataContext $dataContext): DistrictCollection
     {
         $districtCollection = new DistrictCollection();
 
@@ -48,7 +47,7 @@ class DistrictDataParser implements DataParserInterface
 
             $data = array_combine($dataContext->arrayKeys, $matches);
 
-            $district = $this->districtFactory->createDomainObject($data);
+            $district = $this->districtFactory->createDistrict($data);
             $districtCollection->add($district);
         }
 

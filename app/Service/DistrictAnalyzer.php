@@ -3,44 +3,28 @@
 namespace Districts\Service;
 
 
-use Districts\Exception\DomainObjectException;
 use Districts\Model\District;
 use Districts\Model\DistrictCollection;
-use Districts\Model\DomainObjectCollectionInterface;
-use Districts\Model\DomainObjectInterface;
 
-class DistrictAnalyzer implements DataAnalyzerInterface
+class DistrictAnalyzer
 {
     private $districtDataMapper;
 
-    public function __construct(DataMapperInterface $districtDataMapper)
+    public function __construct(DistrictDataMapperInterface $districtDataMapper)
     {
         $this->districtDataMapper = $districtDataMapper;
     }
 
-    /**
-     * @param DomainObjectInterface $district
-     * @throws DomainObjectException
-     */
-    public function analyzeDomainObject(DomainObjectInterface $district)
+    public function analyzeDistrict(District $district)
     {
-        if (!$district instanceof District) {
-            throw new DomainObjectException('DistrictAnalyzer needs District object');
-        }
-
-        $districtCollection = $this->districtDataMapper->findAll([
-            'district.name' => $district->name,
-            'city.city_name' => $district->city
+        $districtCollection = $this->districtDataMapper->findAllByProperties([
+            'name' => $district->name,
+            'city' => $district->city
         ]);
 
         $districtFromDatabase = $districtCollection->getRow(0);
         if (is_null($districtFromDatabase)) {
             $this->districtDataMapper->insertOne($district);
-            return;
-        }
-
-        if (!$districtFromDatabase instanceof District) {
-            throw new DomainObjectException('DistrictAnalyzer needs District object from database');
         }
 
         if (($districtFromDatabase->population !== $district->population) || ($districtFromDatabase->area !== $district->area)) {
@@ -50,48 +34,27 @@ class DistrictAnalyzer implements DataAnalyzerInterface
     }
 
     /**
-     * @param DomainObjectCollectionInterface $districtCollection
-     * @throws DomainObjectException
+     * @param DistrictCollection $districtCollection
      * @throws \Exception
      */
-    public function analyzeDomainObjectCollection(DomainObjectCollectionInterface $districtCollection)
+    public function analyzeDistrictCollection(DistrictCollection $districtCollection)
     {
-        if (!$districtCollection instanceof DistrictCollection) {
-            throw new DomainObjectException('DystrictAnalyzer needs DistrictCollection');
-        }
+        $district = $districtCollection->getRow(0);
 
-        $city = $districtCollection->getRow(0)->city;
-
-        $databaseCollection = $this->districtDataMapper->findAll(['city.city_name' => $city]);
+        $databaseCollection = $this->districtDataMapper->findAllByProperties(['city' => $district->city]);
         $insertCollection = new DistrictCollection();
         $updateCollection = new DistrictCollection();
 
         foreach ($districtCollection as $district) {
 
-            $equals = false;
+            $districtFromDatabase = $databaseCollection->findByName($district->name);
 
-            foreach ($databaseCollection as $districtFromDatabase) {
-
-                if ($district->name === $districtFromDatabase->name) {
-
-                    $equals = true;
-
-                    if (($district->area !== $districtFromDatabase->area) ||
-                        ($district->population !== $districtFromDatabase->population)) {
-
-                        $district->id = $districtFromDatabase->id;
-                        $updateCollection->add($district);
-
-                    }
-
-                    break;
-                }
-
-            }
-            if ($equals === false) {
+            if (is_null($districtFromDatabase)) {
                 $insertCollection->add($district);
+            } else if (!$districtFromDatabase->equals($district)) {
+                $district->id = $districtFromDatabase->id;
+                $updateCollection->add($district);
             }
-
         }
 
         if (!is_null($insertCollection->getRow(0))) {
@@ -101,7 +64,5 @@ class DistrictAnalyzer implements DataAnalyzerInterface
         if (!is_null($updateCollection->getRow(0))) {
             $this->districtDataMapper->updateAll($updateCollection);
         }
-
-
     }
 }

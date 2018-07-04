@@ -3,7 +3,7 @@
 namespace Districts\Model;
 
 
-class District implements DomainObjectInterface
+class District
 {
     public $id;
     public $name;
@@ -24,5 +24,11 @@ class District implements DomainObjectInterface
         $this->area = $area;
         $this->population = $population;
         $this->city = $city;
+    }
+
+    public function equals(District $district): bool
+    {
+        return (($this->name === $district->name) && ($this->area === $district->area) &&
+            ($this->population === $district->population) && ($this->city === $district->city));
     }
 }

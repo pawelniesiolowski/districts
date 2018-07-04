@@ -7,11 +7,11 @@ class InsertBuilder
 {
     public function build(string $table, array $fields): string
     {
-        $values = array_map(function($field) {
+        $placeholders = array_map(function($field) {
             return ':' . $field;
         }, $fields);
         $fields = implode(', ', $fields);
-        $values = implode(', ', $values);
+        $values = implode(', ', $placeholders);
 
         return "INSERT INTO $table ($fields) VALUES ($values)";
     }

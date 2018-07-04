@@ -3,14 +3,10 @@
 namespace Districts\Service;
 
 
-use Districts\Exception\DatabaseException;
-use Districts\Exception\DomainObjectException;
 use Districts\Model\District;
 use Districts\Model\DistrictCollection;
-use Districts\Model\DomainObjectCollectionInterface;
-use Districts\Model\DomainObjectInterface;
 
-class DistrictDataMapper implements DataMapperInterface
+class DistrictDataMapper implements DistrictDataMapperInterface
 {
     private $pdo;
 
@@ -18,88 +14,98 @@ class DistrictDataMapper implements DataMapperInterface
 
     private $selectBuilder;
 
+    private $updateBuilder;
+
     private $insertBuilder;
 
-    private $selectColumns = [
-        'district.district_id',
-        'district.name',
-        'district.area',
-        'district.population',
-        'city.city_name'
-    ];
+    public $columns = ['district_id', 'name', 'area', 'population', 'city'];
 
-    private $insertColumns = [
-        'name',
-        'area',
-        'population',
-        'city_id'
-    ];
+    public $insertColumns = ['name', 'area', 'population', 'city'];
 
-    private $table = 'district';
+    public $updateColumns = ['area', 'population'];
 
-    private $joinTable = 'city';
+    public $filterColumns = ['name', 'area', 'population', 'city'];
 
-    private $joinRelation = 'district.city_id = city.city_id';
+    public $table = 'district';
+
+    public $primaryKey = 'district_id';
 
     public function __construct(
         \PDO $pdo,
-        DomainObjectFactoryInterface $districtFactory,
+        DistrictFactoryInterface $districtFactory,
         SelectBuilder $selectBuilder,
+        UpdateBuilder $updateBuilder,
         InsertBuilder $insertBuilder
     )
     {
         $this->pdo = $pdo;
         $this->districtFactory = $districtFactory;
         $this->selectBuilder = $selectBuilder;
+        $this->updateBuilder = $updateBuilder;
         $this->insertBuilder = $insertBuilder;
     }
 
     /**
-     * @param array $where
-     * @param string|null $orderBy
-     * @return DomainObjectCollectionInterface
+     * @param string $orderBy
+     * @return DistrictCollection
      * @throws \Exception
      */
-    public function findAll(array $where = [], string $orderBy = ''): DomainObjectCollectionInterface
+    public function findAll(string $orderBy = ''): DistrictCollection
     {
-        $this->selectBuilder
-            ->select($this->selectColumns, $this->table)
-            ->join([$this->joinTable], [$this->joinRelation]);
+        $query = $this->selectBuilder
+            ->select($this->columns, $this->table)
+            ->orderBy($this->createOrderBy($orderBy))
+            ->getQuery();
 
-        if (count($where) > 0) {
-
-            $sqlWhereQueries = [];
-            $executeData = [];
-
-            foreach ($where as $key => $value) {
-                $sqlWhereQueries[] = "$key = ?";
-                $executeData[] = $value;
-            }
-
-            $this->selectBuilder->where($sqlWhereQueries);
-        }
-
-        $orderBy = $this->createOrderBy($orderBy);
-        if (!empty($orderBy)) {
-            $this->selectBuilder->orderBy($orderBy);
-        }
-
-        $query = $this->selectBuilder->getQuery();
         $stmt = $this->pdo->prepare($query);
 
-        isset($executeData) ? $stmt->execute($executeData) : $stmt->execute();
+        $stmt->execute();
 
         $districtCollection = new DistrictCollection();
         while ($result = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $districtCollection->add($this->districtFactory->createDomainObject($result));
+            $districtCollection->add($this->districtFactory->createDistrict($result));
         }
         $stmt->closeCursor();
         return $districtCollection;
     }
 
-    public function delete(int $id): bool
+    /**
+     * @param array $properties
+     * @return DistrictCollection
+     * @throws \Exception
+     */
+    public function findAllByProperties(array $properties): DistrictCollection
     {
-        $query = "DELETE FROM {$this->table} WHERE district_id = :id";
+        $conditions = [];
+        $params = [];
+
+        foreach ($properties as $key => $value) {
+            if (in_array($key, $this->filterColumns)) {
+                $placeholder = ":$key";
+                $conditions[] = "$key = $placeholder";
+                $params[$placeholder] = $value;
+            }
+        }
+
+        $query = $this->selectBuilder
+            ->select($this->columns, $this->table)
+            ->where($conditions);
+
+        $stmt = $this->pdo->prepare($query);
+
+        $stmt->execute($params);
+
+        $districtCollection = new DistrictCollection();
+        while ($result = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $districtCollection->add($this->districtFactory->createDistrict($result));
+        }
+        $stmt->closeCursor();
+        return $districtCollection;
+    }
+
+    public function deleteOne(int $id): bool
+    {
+        $query = "DELETE FROM {$this->table} WHERE {$this->primaryKey} = :id";
         $stmt = $this->pdo->prepare($query);
         $stmt->bindParam(':id', $id);
         $result = $stmt->execute();
@@ -107,152 +113,84 @@ class DistrictDataMapper implements DataMapperInterface
         return $result;
     }
 
-
     /**
-     * @param DomainObjectInterface $district
-     * @throws DatabaseException
+     * @param District $district
+     * @return bool
      * @throws \Exception
      */
-    public function insertOne(DomainObjectInterface $district): void
+    public function insertOne(District $district): bool
     {
-        if (!$district instanceof District ) {
-            throw new \Exception('DistrictDataMapper needs District object');
-        }
-        $cityId = $this->checkCityId($district->city);
-        if (!$cityId) {
-            $cityId = $this->insertCity($district->city);
-        }
-        $query = $this->insertBuilder->build($this->table, $this->insertColumns);
-        $stmt = $this->pdo->prepare($query);
-        $stmt->bindParam(':name',$district->name);
-        $stmt->bindParam(':area',$district->area);
-        $stmt->bindParam(':population',$district->population,\PDO::PARAM_INT);
-        $stmt->bindParam(":city_id",$cityId, \PDO::PARAM_INT);
-        $result = $stmt->execute();
-        $stmt->closeCursor();
-        if (!$result) {
-            throw new DatabaseException('Failed to insert query');
-        }
+        $districtCollection = new DistrictCollection();
+        $districtCollection->add($district);
+        return $this->insertAll($districtCollection);
     }
 
     /**
-     * @param DomainObjectCollectionInterface $districtCollection
-     * @throws DomainObjectException
-     * @throws DatabaseException
+     * @param DistrictCollection $districtCollection
+     * @return bool
      */
-    public function insertAll(DomainObjectCollectionInterface $districtCollection): void
+    public function insertAll(DistrictCollection $districtCollection): bool
     {
-        if (!$districtCollection instanceof DistrictCollection) {
-            throw new DomainObjectException('DistrictDataMapper needs DistrictCollection');
-        }
-
-        $knownCities = [];
         $query = $this->insertBuilder->build($this->table, $this->insertColumns);
         $stmt = $this->pdo->prepare($query);
 
         foreach ($districtCollection as $district) {
-
-            if (($cityId = array_search($district->city, $knownCities)) === false) {
-                $cityId = $this->checkCityId($district->city);
-                if (!$cityId) {
-                    $cityId = $this->insertCity($district->city);
-                }
-                $knownCities[$cityId] = $district->city;
-            }
 
             $stmt->bindParam(':name',$district->name);
             $stmt->bindParam(':area',$district->area);
-            $stmt->bindParam(':population',$district->population,\PDO::PARAM_INT);
-            $stmt->bindParam(":city_id",$cityId, \PDO::PARAM_INT);
+            $stmt->bindParam(':population',$district->population, \PDO::PARAM_INT);
+            $stmt->bindParam(':city',$district->city);
+
             $result = $stmt->execute();
             $stmt->closeCursor();
             if (!$result) {
-                throw new DatabaseException('Failed to insert multiple queries');
+                return false;
             }
         }
+        return true;
     }
 
     /**
-     * @param DomainObjectInterface $district
-     * @throws DatabaseException
+     * @param District $district
+     * @return bool
      * @throws \Exception
      */
-    public function updateOne(DomainObjectInterface $district): void
+    public function updateOne(District $district): bool
     {
-        if (!$district instanceof District ) {
-            throw new \Exception('DistrictDataMapper needs District object');
-        }
-
-        $query = "UPDATE {$this->table} SET area = :area, population = :population WHERE district_id = :id";
-        $stmt = $this->pdo->prepare($query);
-
-        $stmt->bindParam(':area',$district->area);
-        $stmt->bindParam(':population',$district->population,\PDO::PARAM_INT);
-        $stmt->bindParam(":id",$district->id, \PDO::PARAM_INT);
-        $result = $stmt->execute();
-        $stmt->closeCursor();
-        if (!$result) {
-            throw new DatabaseException('Failed to insert query');
-        }
+        $districtCollection = new DistrictCollection();
+        $districtCollection->add($district);
+        return $this->updateAll($districtCollection);
     }
 
     /**
-     * @param DomainObjectCollectionInterface $districtCollection
-     * @throws DomainObjectException
-     * @throws DatabaseException
+     * @param DistrictCollection $districtCollection
+     * @return bool
      */
-    public function updateAll(DomainObjectCollectionInterface $districtCollection): void
+    public function updateAll(DistrictCollection $districtCollection): bool
     {
-        if (!$districtCollection instanceof DistrictCollection) {
-            throw new DomainObjectException('DistrictDataMapper needs DistrictCollection');
-        }
+        $query = $this->updateBuilder->build(
+            $this->table,
+            $this->updateColumns,
+            $this->primaryKey);
 
-        $query = "UPDATE {$this->table} SET area = :area, population = :population WHERE district_id = :id";
         $stmt = $this->pdo->prepare($query);
 
         foreach ($districtCollection as $district) {
+
             $stmt->bindParam(':area',$district->area);
-            $stmt->bindParam(':population',$district->population,\PDO::PARAM_INT);
+            $stmt->bindParam(':population',$district->popuation, \PDO::PARAM_INT);
             $stmt->bindParam(":id",$district->id, \PDO::PARAM_INT);
-            if (!$stmt->execute()) {
-                throw new DatabaseException('Failed to insert query');
-            }
+            $result = $stmt->execute();
             $stmt->closeCursor();
+            if (!$result) {
+                return false;
+            }
         }
-    }
-
-    private function checkCityId(string $city)
-    {
-        $query = $this->selectBuilder
-            ->select(['city_id'], 'city')
-            ->where(['city_name = :city_name'])
-            ->getQuery();
-        $stmt = $this->pdo->prepare($query);
-        $stmt->bindParam(':city_name', $city);
-        $stmt->execute();
-        $result = $stmt->fetchColumn();
-        $stmt->closeCursor();
-        return $result;
-    }
-
-    private function insertCity(string $name): int
-    {
-        $query = $this->insertBuilder->build($this->joinTable, ['city_name']);
-        $stmt = $this->pdo->prepare($query);
-        $stmt->bindParam(':city_name', $name);
-        $stmt->execute();
-        $stmt->closeCursor();
-        return $this->pdo->lastInsertId();
+        return true;
     }
 
     private function createOrderBy(string $orderBy = null): string
     {
-        if (in_array("district.$orderBy", $this->selectColumns)) {
-            return "district.$orderBy";
-        }
-        if (in_array("city.$orderBy", $this->selectColumns)) {
-            return "city.$orderBy";
-        }
-        return '';
+        return in_array($orderBy, $this->columns) ? $orderBy : '';
     }
 }

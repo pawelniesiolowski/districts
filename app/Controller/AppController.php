@@ -12,7 +12,7 @@ class AppController implements ControllerInterface
     public function displayMainPage(string $orderBy = '')
     {
         try {
-            $districts = Container::getInstance()->getDistrictDataMapper()->findAll([], $orderBy);
+            $districts = Container::getInstance()->getDistrictDataMapper()->findAll($orderBy);
         } catch (\Exception $e) {
             exit($e->getMessage());
         }
@@ -22,7 +22,7 @@ class AppController implements ControllerInterface
 
     public function delete(int $id)
     {
-        Container::getInstance()->getDistrictDataMapper()->delete($id);
+        Container::getInstance()->getDistrictDataMapper()->deleteOne($id);
         return header('Location: ./');
     }
 

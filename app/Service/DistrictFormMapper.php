@@ -3,22 +3,22 @@
 namespace Districts\Service;
 
 
-use Districts\Model\DomainObjectInterface;
+use Districts\Model\District;
 use Districts\Model\Error;
 
-class DistrictFormMapper implements FormMapperInterface
+class DistrictFormMapper
 {
     private $error;
     private $data;
     private $districtFactory;
 
-    public function __construct(DomainObjectFactoryInterface $districtFactory)
+    public function __construct(DistrictFactoryInterface $districtFactory)
     {
         $this->error = new Error();
         $this->districtFactory = $districtFactory;
     }
 
-    public function loadData(array $data): FormMapperInterface
+    public function loadData(array $data): DistrictFormMapper
     {
         $this->data = $data;
         return $this;
@@ -68,8 +68,8 @@ class DistrictFormMapper implements FormMapperInterface
         return true;
     }
 
-    public function getDomainObject(): DomainObjectInterface
+    public function getDistrict(): District
     {
-        return $this->districtFactory->createDomainObject($this->data);
+        return $this->districtFactory->createDistrict($this->data);
     }
 }

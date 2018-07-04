@@ -3,11 +3,11 @@
 namespace Districts\Service;
 
 
-use Districts\Model\DomainObjectCollectionInterface;
+use Districts\Model\DistrictCollection;
 
 class TextFormatter
 {
-    public static function convertCollectionSpecialChars(DomainObjectCollectionInterface $collection): void
+    public static function convertCollectionSpecialChars(DistrictCollection $collection): void
     {
         foreach ($collection as $domainObject) {
             foreach ($domainObject as $key=>$value) {

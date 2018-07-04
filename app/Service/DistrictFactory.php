@@ -4,15 +4,14 @@ namespace Districts\Service;
 
 
 use Districts\Model\District;
-use Districts\Model\DomainObjectInterface;
 
-class DistrictFactory implements DomainObjectFactoryInterface
+class DistrictFactory implements DistrictFactoryInterface
 {
     /**
      * @param array $data
      * @return District
      */
-    public function createDomainObject(array $data): DomainObjectInterface
+    public function createDistrict(array $data): District
     {
         if (!array_key_exists('district_id', $data)) {
             $data['district_id'] = null;
@@ -22,12 +21,7 @@ class DistrictFactory implements DomainObjectFactoryInterface
             $data['name'],
             $data['area'],
             $data['population'],
-            $data['city_name']
+            $data['city']
         );
-    }
-
-    public function targetClass(): string
-    {
-        return 'District';
     }
 }
