@@ -8,12 +8,6 @@ class UriParser implements ParserInterface
     private $path = '';
     private $args = [];
 
-    public function __construct(string $path, array $args)
-    {
-        $this->path = $path;
-        $this->args = $args;
-    }
-
     public function getPath(): string
     {
         return $this->path;
@@ -26,9 +20,10 @@ class UriParser implements ParserInterface
 
     public function parse(): ParserInterface
     {
-        $this->path = trim($this->path, '/');
-        if (!empty($this->args)) {
-            $parts=explode('?', $this->path);
+        $this->path = trim($_SERVER['REQUEST_URI'], '/');
+        if (!empty($_GET)) {
+            $this->args = $_GET;
+            $parts = explode('?', $this->path);
             $this->path = $parts[0];
         }
         return $this;

@@ -3,24 +3,23 @@
 namespace Districts\Router;
 
 
+use Districts\Controller\ControllerInterface;
+
 class Router
 {
     private $linksCollection;
-    private $parser;
 
-    public function __construct(LinksCollection $linksCollection, ParserInterface $parser)
+    public function __construct(LinksCollection $linksCollection)
     {
         $this->linksCollection = $linksCollection;
-        $this->parser = $parser;
     }
 
-    public function run()
+    public function run(ParserInterface $parser, ControllerInterface $controller)
     {
         try {
-            $link = $this->linksCollection->get($this->parser->parse()->getPath());
-            $controller = $link->buildController();
+            $link = $this->linksCollection->get($parser->parse()->getPath());
             $method = $link->matchControllerWithMethodName($controller);
-            $params = $link->matchUrlParamsWithRegExp($this->parser->getParams());
+            $params = $link->matchUrlParamsWithRegExp($parser->getParams());
         } catch (\Exception $e) {
             exit($e->getMessage());
         }

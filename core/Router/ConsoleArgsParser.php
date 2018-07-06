@@ -5,16 +5,12 @@ namespace Districts\Router;
 
 class ConsoleArgsParser implements ParserInterface
 {
+    private $path = '';
     private $args = [];
-
-    public function __construct(array $args)
-    {
-        $this->args = $args;
-    }
 
     public function getPath(): string
     {
-        return $this->args[0];
+        return $this->path;
     }
 
     public function getParams(): array
@@ -24,7 +20,9 @@ class ConsoleArgsParser implements ParserInterface
 
     public function parse(): ParserInterface
     {
-        array_shift($this->args);
+        $args = $_SERVER['argv'];
+        $this->path = $args[0];
+        $this->args = array_shift($args);
         return $this;
     }
 }

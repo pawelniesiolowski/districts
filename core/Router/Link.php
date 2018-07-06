@@ -4,7 +4,7 @@ namespace Districts\Router;
 
 
 use Districts\Controller\ControllerInterface;
-use Districts\Controller\AppController;
+use Districts\Controller\DistrictController;
 
 class Link
 {
@@ -19,19 +19,6 @@ class Link
         $this->method = $method;
         $this->regParam = $regParam;
         $this->required = $required;
-    }
-
-    /**
-     * @return ControllerInterface
-     * @throws \Exception
-     */
-    public function buildController(): ControllerInterface
-    {
-        switch ($this->controller) {
-            case 'AppController':
-                return new AppController();
-        }
-        throw new \Exception("Controller {$this->controller} is not valid");
     }
 
     /**

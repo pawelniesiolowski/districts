@@ -8,12 +8,10 @@ if ($status == PHP_SESSION_NONE) {
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../core/config.php';
-$linksCollection = require __DIR__ . '/../core/links_collection.php';
 
-$parser = (!empty($_SERVER['argc']) ?
-    new \Districts\Router\ConsoleArgsParser($_SERVER['argv']) :
-    new \Districts\Router\UriParser($_SERVER['REQUEST_URI'], $_GET));
-
-$router = new \Districts\Router\Router($linksCollection, $parser);
-
-$router->run();
+$container = \Districts\Service\Container::getInstance();
+$parser = $container->resolve(isset($_SERVER['argc']) ? 'console' : 'website');
+$controller = $container->resolve('controller');
+/** @var \Districts\Router\Router $router */
+$router = $container->resolve('router');
+$router->run($parser, $controller);
