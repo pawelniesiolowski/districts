@@ -6,7 +6,7 @@ namespace Districts\Service;
 use Districts\Model\District;
 use Districts\Model\DistrictCollection;
 
-class DistrictDataMapper implements DistrictDataMapperInterface
+class DistrictDataMapper
 {
     private $pdo;
 
@@ -32,7 +32,7 @@ class DistrictDataMapper implements DistrictDataMapperInterface
 
     public function __construct(
         \PDO $pdo,
-        DistrictFactoryInterface $districtFactory,
+        DistrictFactory $districtFactory,
         SelectBuilder $selectBuilder,
         UpdateBuilder $updateBuilder,
         InsertBuilder $insertBuilder
@@ -48,7 +48,6 @@ class DistrictDataMapper implements DistrictDataMapperInterface
     /**
      * @param string $orderBy
      * @return DistrictCollection
-     * @throws \Exception
      */
     public function findAll(string $orderBy = ''): DistrictCollection
     {
@@ -72,7 +71,6 @@ class DistrictDataMapper implements DistrictDataMapperInterface
     /**
      * @param array $properties
      * @return DistrictCollection
-     * @throws \Exception
      */
     public function findAllByProperties(array $properties): DistrictCollection
     {
@@ -117,7 +115,6 @@ class DistrictDataMapper implements DistrictDataMapperInterface
     /**
      * @param District $district
      * @return bool
-     * @throws \Exception
      */
     public function insertOne(District $district): bool
     {
@@ -160,7 +157,6 @@ class DistrictDataMapper implements DistrictDataMapperInterface
     /**
      * @param District $district
      * @return bool
-     * @throws \Exception
      */
     public function updateOne(District $district): bool
     {

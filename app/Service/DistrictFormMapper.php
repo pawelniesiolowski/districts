@@ -12,7 +12,7 @@ class DistrictFormMapper
     private $data;
     private $districtFactory;
 
-    public function __construct(DistrictFactoryInterface $districtFactory)
+    public function __construct(DistrictFactory $districtFactory)
     {
         $this->error = new Error();
         $this->districtFactory = $districtFactory;
@@ -38,8 +38,8 @@ class DistrictFormMapper
             $this->error->addError('population', 'Pole populacja musi zawierać liczbę!');
         }
 
-        if (!$this->isValidString($this->data['city_name'], 2, 30)) {
-            $this->error->addError('city_name', 'Nazwa miasta musi mieć od 2 do 30 znaków!');
+        if (!$this->isValidString($this->data['city'], 2, 30)) {
+            $this->error->addError('city', 'Nazwa miasta musi mieć od 2 do 30 znaków!');
         }
 
         return ((count($this->error->getAllErrors()) === 0));

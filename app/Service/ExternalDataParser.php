@@ -6,11 +6,11 @@ namespace Districts\Service;
 use Districts\Model\DataContext;
 use Districts\Model\DistrictCollection;
 
-class DistrictDataParser
+class ExternalDataParser
 {
     private $districtFactory;
 
-    public function __construct(DistrictFactoryInterface $districtFactory)
+    public function __construct(DistrictFactory $districtFactory)
     {
         $this->districtFactory = $districtFactory;
     }

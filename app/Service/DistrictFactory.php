@@ -5,7 +5,7 @@ namespace Districts\Service;
 
 use Districts\Model\District;
 
-class DistrictFactory implements DistrictFactoryInterface
+class DistrictFactory
 {
     /**
      * @param array $data
