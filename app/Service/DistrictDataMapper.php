@@ -89,7 +89,8 @@ class DistrictDataMapper implements DistrictDataMapperInterface
 
         $query = $this->selectBuilder
             ->select($this->columns, $this->table)
-            ->where($conditions);
+            ->where($conditions)
+            ->getQuery();
 
         $stmt = $this->pdo->prepare($query);
 
@@ -120,9 +121,16 @@ class DistrictDataMapper implements DistrictDataMapperInterface
      */
     public function insertOne(District $district): bool
     {
-        $districtCollection = new DistrictCollection();
-        $districtCollection->add($district);
-        return $this->insertAll($districtCollection);
+        $stmt = $this->createInsertStatement();
+
+        $stmt->bindParam(':name',$district->name);
+        $stmt->bindParam(':area',$district->area);
+        $stmt->bindParam(':population',$district->population, \PDO::PARAM_INT);
+        $stmt->bindParam(':city',$district->city);
+
+        $result = $stmt->execute();
+        $stmt->closeCursor();
+        return $result ? true : false;
     }
 
     /**
@@ -131,8 +139,7 @@ class DistrictDataMapper implements DistrictDataMapperInterface
      */
     public function insertAll(DistrictCollection $districtCollection): bool
     {
-        $query = $this->insertBuilder->build($this->table, $this->insertColumns);
-        $stmt = $this->pdo->prepare($query);
+        $stmt = $this->createInsertStatement();
 
         foreach ($districtCollection as $district) {
 
@@ -157,9 +164,13 @@ class DistrictDataMapper implements DistrictDataMapperInterface
      */
     public function updateOne(District $district): bool
     {
-        $districtCollection = new DistrictCollection();
-        $districtCollection->add($district);
-        return $this->updateAll($districtCollection);
+        $stmt = $this->createUpdateStatement();
+        $stmt->bindParam(':area',$district->area);
+        $stmt->bindParam(':population',$district->population, \PDO::PARAM_INT);
+        $stmt->bindParam(":id",$district->id, \PDO::PARAM_INT);
+        $result = $stmt->execute();
+        $stmt->closeCursor();
+        return $result;
     }
 
     /**
@@ -168,12 +179,7 @@ class DistrictDataMapper implements DistrictDataMapperInterface
      */
     public function updateAll(DistrictCollection $districtCollection): bool
     {
-        $query = $this->updateBuilder->build(
-            $this->table,
-            $this->updateColumns,
-            $this->primaryKey);
-
-        $stmt = $this->pdo->prepare($query);
+        $stmt = $this->createUpdateStatement();
 
         foreach ($districtCollection as $district) {
 
@@ -187,6 +193,23 @@ class DistrictDataMapper implements DistrictDataMapperInterface
             }
         }
         return true;
+    }
+
+    private function createInsertStatement(): \PDOStatement
+    {
+        $query = $this->insertBuilder->build($this->table, $this->insertColumns);
+
+        return $this->pdo->prepare($query);
+    }
+
+    private function createUpdateStatement(): \PDOStatement
+    {
+        $query = $this->updateBuilder->build(
+            $this->table,
+            $this->updateColumns,
+            $this->primaryKey);
+
+        return $this->pdo->prepare($query);
     }
 
     private function createOrderBy(string $orderBy = null): string
