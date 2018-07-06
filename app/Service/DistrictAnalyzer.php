@@ -10,7 +10,7 @@ class DistrictAnalyzer
 {
     private $districtDataMapper;
 
-    public function __construct(DistrictDataMapperInterface $districtDataMapper)
+    public function __construct(DistrictDataMapper $districtDataMapper)
     {
         $this->districtDataMapper = $districtDataMapper;
     }
@@ -22,12 +22,10 @@ class DistrictAnalyzer
             'city' => $district->city
         ]);
 
-        $districtFromDatabase = $districtCollection->getRow(0);
+        $districtFromDatabase = $districtCollection->getDistrict(0);
         if (is_null($districtFromDatabase)) {
             $this->districtDataMapper->insertOne($district);
-        }
-
-        if (($districtFromDatabase->population !== $district->population) || ($districtFromDatabase->area !== $district->area)) {
+        } else if (!$district->equals($districtFromDatabase)) {
             $district->id = $districtFromDatabase->id;
             $this->districtDataMapper->updateOne($district);
         }
@@ -35,11 +33,10 @@ class DistrictAnalyzer
 
     /**
      * @param DistrictCollection $districtCollection
-     * @throws \Exception
      */
     public function analyzeDistrictCollection(DistrictCollection $districtCollection)
     {
-        $district = $districtCollection->getRow(0);
+        $district = $districtCollection->getDistrict(0);
 
         $databaseCollection = $this->districtDataMapper->findAllByProperties(['city' => $district->city]);
         $insertCollection = new DistrictCollection();
@@ -57,11 +54,11 @@ class DistrictAnalyzer
             }
         }
 
-        if (!is_null($insertCollection->getRow(0))) {
+        if (!is_null($insertCollection->getDistrict(0))) {
             $this->districtDataMapper->insertAll($insertCollection);
         }
 
-        if (!is_null($updateCollection->getRow(0))) {
+        if (!is_null($updateCollection->getDistrict(0))) {
             $this->districtDataMapper->updateAll($updateCollection);
         }
     }
