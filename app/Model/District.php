@@ -26,8 +26,11 @@ class District
         $this->city = $city;
     }
 
-    public function equals(District $district): bool
+    public function equals(District $district = null): bool
     {
+        if ($district === null) {
+            return false;
+        }
         return (($this->name === $district->name) && ($this->area === $district->area) &&
             ($this->population === $district->population) && ($this->city === $district->city));
     }
