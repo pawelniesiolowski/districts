@@ -4,7 +4,6 @@ namespace Districts\Router;
 
 
 use Districts\Controller\ControllerInterface;
-use Districts\Controller\DistrictController;
 
 class Link
 {
