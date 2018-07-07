@@ -14,3 +14,7 @@ td, th {
 p {
     color: red;
 }
+
+.button {
+    margin: 15px 0;
+}

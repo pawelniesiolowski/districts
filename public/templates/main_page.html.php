@@ -27,11 +27,20 @@
         <?php endforeach; ?>
     </table>
     <form action="./save" method="post">
-        <label>Nazwa <input type="text" name="name" value="<?= $_SESSION['form_data']['name'] ?? '' ?>"></label>
-        <label>Powierzchnia <input type="text" name="area" value=""<?= $_SESSION['form_data']['area'] ?? '' ?>"></label>
-        <label>Populacja <input type="number" name="population" value="<?= $_SESSION['form_data']['population'] ?? '' ?>"></label>
-        <label>Miasto <input type="text" name="city" value=""<?= $_SESSION['form_data']['city'] ?? '' ?>"></label>
-        <input type="submit" value="Zapisz">
+        <label>Nazwa:
+            <input type="text" name="name" value="<?= $_SESSION['form_data']['name'] ?? '' ?>">
+        </label>
+        <label>Powierzchnia:
+            <input type="text" name="area" value=""<?= $_SESSION['form_data']['area'] ?? '' ?>">
+        </label>
+        <label>Populacja:
+            <input type="number" name="population" value="<?= $_SESSION['form_data']['population'] ?? '' ?>">
+        </label>
+        <label>Miasto:
+            <input type="text" name="city" value=""<?= $_SESSION['form_data']['city'] ?? '' ?>">
+        </label>
+        <br>
+        <input type="submit" value="Zapisz" class="button">
         <p class="error"><?= $_SESSION['form_errors']['name'] ?? '' ?></p>
         <p class="error"><?= $_SESSION['form_errors']['area'] ?? '' ?></p>
         <p class="error"><?= $_SESSION['form_errors']['population'] ?? '' ?></p>
@@ -41,6 +50,5 @@
         unset($_SESSION['form_errors']);
         ?>
     </form>
-    <a href="./actualize">Aktualizuj dzielnice</a>
 </body>
 </html>
