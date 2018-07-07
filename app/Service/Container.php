@@ -32,10 +32,10 @@ class Container
 
     private function __construct()
     {
-        $this->registry[] = new Registry('Router', 'Router', 'router');
-        $this->registry[] = new Registry('ParserInterface', 'UriParser', 'website');
-        $this->registry[] = new Registry('ParserInterface', 'ConsoleArgsParser', 'console');
-        $this->registry[] = new Registry('ControllerInterface', 'DistrictController', 'controller');
+        $this->addRegistry('Router', 'Router');
+        $this->addRegistry('ParserInterface', 'UriParser', 'website');
+        $this->addRegistry('ParserInterface', 'ConsoleArgsParser', 'console');
+        $this->addRegistry('ControllerInterface', 'DistrictController');
 
         $this->linksCollection = new LinksCollection();
         $this->linksCollection->add('', new Link('DistrictController', 'displayMainPage', ['sort' => '/[A-Za-z_.]/'], false));
@@ -44,15 +44,14 @@ class Container
         $this->linksCollection->add('actualize', new Link('DistrictController', 'actualize'));
     }
 
-    public function resolve(string $alias)
+    public function resolve(string $interface, string $alias = '')
     {
         $service = null;
-        foreach ($this->registry as $class) {
-            if ($class->alias === $alias) {
-                $methodName = 'get' . $class->class;
-                $service = $this->{$methodName}();
-            }
-        }
+        $services = array_filter($this->registry, function ($class) use ($interface, $alias) {
+            return (($class->interface === $interface) && ($class->alias === $alias));
+        });
+        $methodName = 'get' . array_pop($services)->class;
+        $service = $this->{$methodName}();
         return $service;
     }
 
@@ -177,5 +176,10 @@ class Container
             $this->insertBuilder = new InsertBuilder();
         }
         return $this->insertBuilder;
+    }
+
+    private function addRegistry(string $interface, string $class, string $alias = ''): void
+    {
+        $this->registry[] = new Registry($interface, $class, $alias);
     }
 }
