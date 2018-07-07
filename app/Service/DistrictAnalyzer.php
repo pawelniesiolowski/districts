@@ -5,6 +5,7 @@ namespace Districts\Service;
 
 use Districts\Model\District;
 use Districts\Model\DistrictCollection;
+use Districts\Model\DistrictConditions;
 
 class DistrictAnalyzer
 {
@@ -15,13 +16,16 @@ class DistrictAnalyzer
         $this->districtDataMapper = $districtDataMapper;
     }
 
+    /**
+     * @param District $district
+     * @throws \Exception
+     */
     public function analyzeDistrict(District $district)
     {
-        $districtCollection = $this->districtDataMapper->findAllByProperties([
-            'name' => $district->name,
-            'city' => $district->city
-        ]);
-
+        $conditions = new DistrictConditions();
+        $conditions->add('name', $district->name);
+        $conditions->add('city', $district->city);
+        $districtCollection = $this->districtDataMapper->findAllByConditions($conditions);
         $districtFromDatabase = $districtCollection->getDistrict(0);
         if (is_null($districtFromDatabase)) {
             $this->districtDataMapper->insertOne($district);
@@ -33,12 +37,15 @@ class DistrictAnalyzer
 
     /**
      * @param DistrictCollection $districtCollection
+     * @throws \Exception
      */
     public function analyzeDistrictCollection(DistrictCollection $districtCollection)
     {
         $district = $districtCollection->getDistrict(0);
 
-        $databaseCollection = $this->districtDataMapper->findAllByProperties(['city' => $district->city]);
+        $conditions = new DistrictConditions();
+        $conditions->add('city', $district->city);
+        $databaseCollection = $this->districtDataMapper->findAllByConditions($conditions);
         $insertCollection = new DistrictCollection();
         $updateCollection = new DistrictCollection();
 

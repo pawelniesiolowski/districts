@@ -5,6 +5,7 @@ namespace Districts\Service;
 
 use Districts\Model\District;
 use Districts\Model\DistrictCollection;
+use Districts\Model\DistrictConditions;
 
 class DistrictDataMapper
 {
@@ -68,31 +69,19 @@ class DistrictDataMapper
         return $districtCollection;
     }
 
-    /**
-     * @param array $properties
-     * @return DistrictCollection
-     */
-    public function findAllByProperties(array $properties): DistrictCollection
+    public function findAllByConditions(DistrictConditions $conditions): DistrictCollection
     {
-        $conditions = [];
-        $params = [];
-
-        foreach ($properties as $key => $value) {
-            if (in_array($key, $this->filterColumns)) {
-                $placeholder = ":$key";
-                $conditions[] = "$key = $placeholder";
-                $params[$placeholder] = $value;
-            }
-        }
-
         $query = $this->selectBuilder
             ->select($this->columns, $this->table)
-            ->where($conditions)
+            ->where($conditions->getConditions())
             ->getQuery();
 
         $stmt = $this->pdo->prepare($query);
 
-        $stmt->execute($params);
+        foreach ($conditions as $param) {
+            $stmt->bindParam($param->name,$param->value, $param->type);
+        }
+        $stmt->execute();
 
         $districtCollection = new DistrictCollection();
         while ($result = $stmt->fetch(\PDO::FETCH_ASSOC)) {
