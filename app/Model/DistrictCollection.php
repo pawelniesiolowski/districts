@@ -5,7 +5,7 @@ namespace Districts\Model;
 
 class DistrictCollection implements \Iterator
 {
-    private $districts;
+    private $districts = [];
     private $total = 0;
     private $pointer = 0;
 
