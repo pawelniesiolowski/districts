@@ -21,8 +21,10 @@ class ConsoleArgsParser implements ParserInterface
     public function parse(): ParserInterface
     {
         $args = $_SERVER['argv'];
-        $this->path = $args[0];
-        $this->args = array_shift($args);
+        if (count($args) > 1) {
+            $this->path = $args[1];
+            $this->args = array_slice($args, 2);
+        }
         return $this;
     }
 }
