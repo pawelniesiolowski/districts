@@ -57,6 +57,6 @@ class DistrictCollection implements \Iterator
            return $district->name === $name;
         });
 
-        return $districts[0] ?? null;
+        return array_pop($districts);
     }
 }
