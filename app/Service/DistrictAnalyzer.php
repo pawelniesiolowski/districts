@@ -50,7 +50,6 @@ class DistrictAnalyzer
         $updateCollection = new DistrictCollection();
 
         foreach ($districtCollection as $district) {
-
             $districtFromDatabase = $databaseCollection->findByName($district->name);
 
             if (is_null($districtFromDatabase)) {

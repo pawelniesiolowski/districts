@@ -3,30 +3,29 @@
 namespace Districts\Controller;
 
 
-use Districts\Model\DataContext;
 use Districts\Service\DistrictAnalyzer;
 use Districts\Service\DistrictDataMapper;
 use Districts\Service\DistrictFormMapper;
-use Districts\Service\ExternalDataParser;
+use Districts\Service\GdanskAppDataMapper;
 use Districts\Service\TextFormatter;
 
 class DistrictController implements ControllerInterface
 {
     private $districtDataMapper;
     private $districtFormMapper;
-    private $externalDataParser;
+    private $gdanskAppDataMapper;
     private $districtAnalyzer;
 
     public function __construct(
         DistrictDataMapper $districtDataMapper,
         DistrictFormMapper $districtFormMapper,
-        ExternalDataParser $externalDataParser,
+        GdanskAppDataMapper $gdanskAppDataMapper,
         DistrictAnalyzer $districtAnalyzer
     )
     {
         $this->districtDataMapper = $districtDataMapper;
         $this->districtFormMapper = $districtFormMapper;
-        $this->externalDataParser = $externalDataParser;
+        $this->gdanskAppDataMapper = $gdanskAppDataMapper;
         $this->districtAnalyzer = $districtAnalyzer;
     }
 
@@ -66,20 +65,12 @@ class DistrictController implements ControllerInterface
 
     public function actualize()
     {
-        $dataContext = new DataContext(
-            'Gdańsk',
-            'http://www.gdansk.pl/subpages/dzielnice/[dzielnice]/html/dzielnice_mapa_alert.php?id=%d',
-            '/([^^]*)Powierzchnia:([\d,\s]*)[^^]*Liczba\s*ludności:([\d\s]*)/i',
-            1,
-            34,
-            ['district_id', 'name', 'area', 'population', 'city']
-        );
-
+        $districtCollection = $this->gdanskAppDataMapper->get();
         try {
-            $districtCollection = $this->externalDataParser->parseData($dataContext);
             $this->districtAnalyzer->analyzeDistrictCollection($districtCollection);
         } catch (\Exception $e) {
             exit($e->getMessage());
         }
+        echo 'Actualizing complete' . PHP_EOL;
     }
 }

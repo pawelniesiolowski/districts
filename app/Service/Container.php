@@ -20,7 +20,7 @@ class Container
     private $uriParser;
     private $consoleArgsParser;
     private $districtController;
-    private $externalDataParser;
+    private $GdanskAppDataMapper;
     private $districtFormMapper;
     private $districtAnalyzer;
     private $dataMapper;
@@ -85,7 +85,7 @@ class Container
             $this->districtController = new DistrictController(
                 $this->getDistrictDataMapper(),
                 $this->getDistrictFormMapper(),
-                $this->getExternalDataParser(),
+                $this->getGdanskAppDataMapper(),
                 $this->getDistrictAnalyzer()
             );
         }
@@ -100,12 +100,12 @@ class Container
         return self::$instance;
     }
 
-    public function getExternalDataParser(): ExternalDataParser
+    public function getGdanskAppDataMapper(): GdanskAppDataMapper
     {
-        if ($this->externalDataParser === null) {
-            $this->externalDataParser = new ExternalDataParser($this->getDistrictFactory());
+        if ($this->GdanskAppDataMapper === null) {
+            $this->GdanskAppDataMapper = new GdanskAppDataMapper($this->getDistrictFactory());
         }
-        return $this->externalDataParser;
+        return $this->GdanskAppDataMapper;
     }
 
     public function getDistrictFormMapper(): DistrictFormMapper
