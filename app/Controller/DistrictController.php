@@ -5,6 +5,7 @@ namespace Districts\Controller;
 
 use Districts\Service\DistrictAnalyzer;
 use Districts\Service\DistrictDataMapper;
+use Districts\Service\DistrictFilter;
 use Districts\Service\DistrictFormMapper;
 use Districts\Service\GdanskAppDataMapper;
 use Districts\Service\TextFormatter;
@@ -15,18 +16,21 @@ class DistrictController implements ControllerInterface
     private $districtFormMapper;
     private $gdanskAppDataMapper;
     private $districtAnalyzer;
+    private $districtFilter;
 
     public function __construct(
         DistrictDataMapper $districtDataMapper,
         DistrictFormMapper $districtFormMapper,
         GdanskAppDataMapper $gdanskAppDataMapper,
-        DistrictAnalyzer $districtAnalyzer
+        DistrictAnalyzer $districtAnalyzer,
+        DistrictFilter $districtFilter
     )
     {
         $this->districtDataMapper = $districtDataMapper;
         $this->districtFormMapper = $districtFormMapper;
         $this->gdanskAppDataMapper = $gdanskAppDataMapper;
         $this->districtAnalyzer = $districtAnalyzer;
+        $this->districtFilter = $districtFilter;
     }
 
     public function displayMainPage(string $orderBy = '')
@@ -72,5 +76,18 @@ class DistrictController implements ControllerInterface
             exit($e->getMessage());
         }
         echo 'Actualizing complete' . PHP_EOL;
+    }
+
+    public function filter(string $json)
+    {
+        $filter = json_decode($json);
+        try {
+            $districtCondition = $this->districtFilter->getDistrictConditions($filter);
+        } catch (\Exception $e) {
+            exit('[]');
+        }
+        $districts = $this->districtDataMapper->findAllByConditions($districtCondition);
+        $districtsResponse = $districts->getDistrictsArray();
+        echo json_encode($districtsResponse);
     }
 }

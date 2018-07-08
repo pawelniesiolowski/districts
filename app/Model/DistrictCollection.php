@@ -23,6 +23,11 @@ class DistrictCollection implements \Iterator
         return $this->districts[$number];
     }
 
+    public function getDistrictsArray(): array
+    {
+        return $this->districts;
+    }
+
     public function current()
     {
         return $this->getDistrict($this->pointer);

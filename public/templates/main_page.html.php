@@ -8,12 +8,12 @@
 <body>
     <h1>Districts Application</h1>
     <h3>Informacje na temat dzielnic Gdańska i Krakowa</h3>
-    <table id="district_table">
+    <table id="district-table">
         <tr>
-            <th><a href="<?= './?sort=name' ?>">Nazwa</a></th>
-            <th><a href="<?= './?sort=area' ?>">Powierzchnia</a></th>
-            <th><a href="<?= './?sort=population' ?>">Populacja</a></th>
-            <th><a href="<?= './?sort=city' ?>">Miasto</a></th>
+            <th><a href="./?sort=name">Nazwa</a></th>
+            <th><a href="./?sort=area">Powierzchnia</a></th>
+            <th><a href="./?sort=population">Populacja</a></th>
+            <th><a href="./?sort=city">Miasto</a></th>
             <th>Usuń</th>
         </tr>
         <?php foreach ($districts as $district): ?>
@@ -26,18 +26,18 @@
         </tr>
         <?php endforeach; ?>
     </table>
-    <form action="./save" method="post">
+    <form id="district-form" action="./save" method="post">
         <label>Nazwa:
             <input type="text" name="name" value="<?= $_SESSION['form_data']['name'] ?? '' ?>">
         </label>
         <label>Powierzchnia:
-            <input type="text" name="area" value=""<?= $_SESSION['form_data']['area'] ?? '' ?>">
+            <input type="text" name="area" value="<?= $_SESSION['form_data']['area'] ?? '' ?>">
         </label>
         <label>Populacja:
             <input type="number" name="population" value="<?= $_SESSION['form_data']['population'] ?? '' ?>">
         </label>
         <label>Miasto:
-            <input type="text" name="city" value=""<?= $_SESSION['form_data']['city'] ?? '' ?>">
+            <input type="text" name="city" value="<?= $_SESSION['form_data']['city'] ?? '' ?>">
         </label>
         <br>
         <input type="submit" value="Zapisz" class="button">
@@ -50,5 +50,6 @@
         unset($_SESSION['form_errors']);
         ?>
     </form>
+    <script src="./../js/filter.js"></script>
 </body>
 </html>
