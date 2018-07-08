@@ -29,6 +29,7 @@ class Container
     private $selectBuilder;
     private $updateBuilder;
     private $insertBuilder;
+    private $districtFilter;
 
     private function __construct()
     {
@@ -42,6 +43,7 @@ class Container
         $this->linksCollection->add('delete', new Link('DistrictController', 'delete', ['id' => '/^\d+$/', 'city' => '/[A-Za-z_.]/'], true));
         $this->linksCollection->add('save', new Link('DistrictController', 'save'));
         $this->linksCollection->add('actualize', new Link('DistrictController', 'actualize'));
+        $this->linksCollection->add('filter', new Link('DistrictController', 'filter', ['json' => '/[^^]/']));
     }
 
     public function resolve(string $interface, string $alias = '')
@@ -55,7 +57,8 @@ class Container
         return $service;
     }
 
-    public function getRouter(): Router
+    /** @noinspection PhpUnusedPrivateMethodInspection */
+    private function getRouter(): Router
     {
         if ($this->router === null) {
             $this->router = new Router($this->linksCollection);
@@ -63,7 +66,8 @@ class Container
         return $this->router;
     }
 
-    public function getUriParser(): UriParser
+    /** @noinspection PhpUnusedPrivateMethodInspection */
+    private function getUriParser(): UriParser
     {
         if ($this->uriParser === null) {
             $this->uriParser = new UriParser();
@@ -71,7 +75,8 @@ class Container
         return $this->uriParser;
     }
 
-    public function getConsoleArgsParser(): ConsoleArgsParser
+    /** @noinspection PhpUnusedPrivateMethodInspection */
+    private function getConsoleArgsParser(): ConsoleArgsParser
     {
         if ($this->consoleArgsParser === null) {
             $this->consoleArgsParser = new ConsoleArgsParser();
@@ -79,14 +84,16 @@ class Container
         return $this->consoleArgsParser;
     }
 
-    public function getDistrictController(): DistrictController
+    /** @noinspection PhpUnusedPrivateMethodInspection */
+    private function getDistrictController(): DistrictController
     {
         if ($this->districtController === null) {
             $this->districtController = new DistrictController(
                 $this->getDistrictDataMapper(),
                 $this->getDistrictFormMapper(),
                 $this->getGdanskAppDataMapper(),
-                $this->getDistrictAnalyzer()
+                $this->getDistrictAnalyzer(),
+                $this->getDistrictFilter()
             );
         }
         return $this->districtController;
@@ -100,7 +107,7 @@ class Container
         return self::$instance;
     }
 
-    public function getGdanskAppDataMapper(): GdanskAppDataMapper
+    private function getGdanskAppDataMapper(): GdanskAppDataMapper
     {
         if ($this->GdanskAppDataMapper === null) {
             $this->GdanskAppDataMapper = new GdanskAppDataMapper($this->getDistrictFactory());
@@ -108,7 +115,7 @@ class Container
         return $this->GdanskAppDataMapper;
     }
 
-    public function getDistrictFormMapper(): DistrictFormMapper
+    private function getDistrictFormMapper(): DistrictFormMapper
     {
         if ($this->districtFormMapper === null) {
             $this->districtFormMapper = new DistrictFormMapper($this->getDistrictFactory());
@@ -116,7 +123,7 @@ class Container
         return $this->districtFormMapper;
     }
 
-    public function getDistrictAnalyzer(): DistrictAnalyzer
+    private function getDistrictAnalyzer(): DistrictAnalyzer
     {
         if ($this->districtAnalyzer === null) {
             $this->districtAnalyzer = new DistrictAnalyzer($this->getDistrictDataMapper());
@@ -124,7 +131,7 @@ class Container
         return $this->districtAnalyzer;
     }
 
-    public function getDistrictDataMapper(): DistrictDataMapper
+    private function getDistrictDataMapper(): DistrictDataMapper
     {
         if ($this->dataMapper === null) {
             $this->dataMapper = new DistrictDataMapper(
@@ -181,5 +188,13 @@ class Container
     private function addRegistry(string $interface, string $class, string $alias = ''): void
     {
         $this->registry[] = new Registry($interface, $class, $alias);
+    }
+
+    private function getDistrictFilter()
+    {
+        if ($this->districtFilter === null) {
+            $this->districtFilter = new DistrictFilter();
+        }
+        return $this->districtFilter;
     }
 }
