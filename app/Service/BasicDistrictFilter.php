@@ -14,20 +14,20 @@ class BasicDistrictFilter implements DistrictFilterInterface
      */
     public function getConditions(\stdClass $filter): DistrictConditions
     {
-        $districtCondition = new DistrictConditions();
+        $districtConditions = new DistrictConditions();
         if (!empty($filter->name)) {
-            $districtCondition->add('name', $filter->name, 'LIKE');
+            $districtConditions->add('name', $filter->name, 'LIKE');
         }
         if (!empty($filter->area)) {
-            $districtCondition->add('area', (float)$filter->area);
+            $districtConditions->add('area', (float)$filter->area);
         }
         if (!empty($filter->population)) {
-            $districtCondition->add('population', (int)$filter->population);
+            $districtConditions->add('population', (int)$filter->population);
         }
         if (!empty($filter->city)) {
-            $districtCondition->add('city', $filter->city, 'LIKE');
+            $districtConditions->add('city', $filter->city, 'LIKE');
         }
 
-        return $districtCondition;
+        return $districtConditions;
     }
 }

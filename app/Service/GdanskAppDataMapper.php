@@ -22,6 +22,10 @@ class GdanskAppDataMapper implements ExternalAppDataMapperInterface
         $this->dataTransfer = $dataTransfer;
     }
 
+    /**
+     * @return DistrictCollection
+     * @throws \Exception
+     */
     public function get(): DistrictCollection
     {
         $districtCollection = new DistrictCollection();

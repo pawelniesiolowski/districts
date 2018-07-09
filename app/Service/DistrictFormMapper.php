@@ -68,6 +68,10 @@ class DistrictFormMapper
         return true;
     }
 
+    /**
+     * @return District
+     * @throws \Exception
+     */
     public function getDistrict(): District
     {
         return $this->districtFactory->createDistrict($this->data);

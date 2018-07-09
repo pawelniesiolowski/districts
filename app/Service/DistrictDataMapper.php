@@ -46,9 +46,11 @@ class DistrictDataMapper
         $this->insertBuilder = $insertBuilder;
     }
 
+
     /**
      * @param string $orderBy
      * @return DistrictCollection
+     * @throws \Exception
      */
     public function findAll(string $orderBy = ''): DistrictCollection
     {
@@ -69,6 +71,11 @@ class DistrictDataMapper
         return $districtCollection;
     }
 
+    /**
+     * @param DistrictConditions $conditions
+     * @return DistrictCollection
+     * @throws \Exception
+     */
     public function findAllByConditions(DistrictConditions $conditions): DistrictCollection
     {
         $query = $this->selectBuilder

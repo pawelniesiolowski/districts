@@ -27,6 +27,7 @@ class DistrictAnalyzer
         $conditions->add('city', $district->city);
         $districtCollection = $this->districtDataMapper->findAllByConditions($conditions);
         $districtFromDatabase = $districtCollection->getDistrict(0);
+
         if (is_null($districtFromDatabase)) {
             $this->districtDataMapper->insertOne($district);
         } else if (!$district->equals($districtFromDatabase)) {
