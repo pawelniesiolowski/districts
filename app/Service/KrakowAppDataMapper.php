@@ -26,6 +26,10 @@ class KrakowAppDataMapper implements ExternalAppDataMapperInterface
         ];
     }
 
+    /**
+     * @return DistrictCollection
+     * @throws \Exception
+     */
     public function get(): DistrictCollection
     {
         $districtCollection = new DistrictCollection();
@@ -84,7 +88,7 @@ class KrakowAppDataMapper implements ExternalAppDataMapperInterface
         return $data;
     }
 
-    private function haTokm2(float $ha)
+    private function haTokm2(float $ha): float
     {
         return $ha * 0.01;
     }
