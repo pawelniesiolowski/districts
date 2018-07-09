@@ -42,7 +42,7 @@ class DistrictController implements ControllerInterface
         }
 
         TextFormatter::convertCollectionSpecialChars($districts);
-        require __DIR__ . '/../../public/templates/main_page.html.php';
+        return require __DIR__ . '/../../public/templates/main_page.html.php';
     }
 
     public function delete(int $id)
@@ -57,8 +57,8 @@ class DistrictController implements ControllerInterface
             $_SESSION['form_data'] = TextFormatter::convertArraySpecialChars($_POST);
             $_SESSION['form_errors'] = $this->districtFormMapper->getFormErrors();
         } else {
-            $district = $this->districtFormMapper->getDistrict();
             try {
+                $district = $this->districtFormMapper->getDistrict();
                 $this->districtAnalyzer->analyzeDistrict($district);
             } catch (\Exception $e) {
                 exit($e->getMessage());
@@ -77,6 +77,10 @@ class DistrictController implements ControllerInterface
         } catch (\Exception $e) {
             exit($e->getMessage());
         }
+        if (!isset($_SERVER['argc'])) {
+            header('Location: ./');
+            exit();
+        }
         echo 'Actualizing complete' . PHP_EOL;
     }
 
@@ -85,10 +89,10 @@ class DistrictController implements ControllerInterface
         $filter = json_decode($json);
         try {
             $districtCondition = $this->districtFilter->getConditions($filter);
+            $districts = $this->districtDataMapper->findAllByConditions($districtCondition);
         } catch (\Exception $e) {
             exit('[]');
         }
-        $districts = $this->districtDataMapper->findAllByConditions($districtCondition);
         $districtsResponse = $districts->getDistrictsArray();
         echo json_encode($districtsResponse);
     }
