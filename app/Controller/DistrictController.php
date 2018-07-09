@@ -3,36 +3,32 @@
 namespace Districts\Controller;
 
 
+use Districts\Service\CityAppDataMapperFactory;
 use Districts\Service\DistrictAnalyzer;
 use Districts\Service\DistrictDataMapper;
 use Districts\Service\DistrictFilter;
 use Districts\Service\DistrictFormMapper;
-use Districts\Service\GdanskAppDataMapper;
-use Districts\Service\KrakowAppDataMapper;
 use Districts\Service\TextFormatter;
 
 class DistrictController implements ControllerInterface
 {
     private $districtDataMapper;
     private $districtFormMapper;
-    private $gdanskAppDataMapper;
-    private $krakowAppDataMapper;
+    private $cityAppDataMapperFactory;
     private $districtAnalyzer;
     private $districtFilter;
 
     public function __construct(
         DistrictDataMapper $districtDataMapper,
         DistrictFormMapper $districtFormMapper,
-        GdanskAppDataMapper $gdanskAppDataMapper,
-        KrakowAppDataMapper $krakowAppDataMapper,
+        CityAppDataMapperFactory $cityAppDataMapperFactory,
         DistrictAnalyzer $districtAnalyzer,
         DistrictFilter $districtFilter
     )
     {
         $this->districtDataMapper = $districtDataMapper;
         $this->districtFormMapper = $districtFormMapper;
-        $this->gdanskAppDataMapper = $gdanskAppDataMapper;
-        $this->krakowAppDataMapper = $krakowAppDataMapper;
+        $this->cityAppDataMapperFactory = $cityAppDataMapperFactory;
         $this->districtAnalyzer = $districtAnalyzer;
         $this->districtFilter = $districtFilter;
     }
@@ -73,9 +69,9 @@ class DistrictController implements ControllerInterface
 
     public function actualize()
     {
-        $gdanskCollection = $this->gdanskAppDataMapper->get();
-        $krakowCollection = $this->krakowAppDataMapper->get();
         try {
+            $gdanskCollection = $this->cityAppDataMapperFactory->create('Gdańsk')->get();
+            $krakowCollection = $this->cityAppDataMapperFactory->create('Kraków')->get();
             $this->districtAnalyzer->analyzeDistrictCollection($gdanskCollection);
             $this->districtAnalyzer->analyzeDistrictCollection($krakowCollection);
         } catch (\Exception $e) {

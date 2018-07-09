@@ -20,8 +20,8 @@ class Container
     private $uriParser;
     private $consoleArgsParser;
     private $districtController;
-    private $gdanskAppDataMapper;
-    private $krakowAppDataMapper;
+    private $cityAppDataMapperFactory;
+    private $curlMultiManager;
     private $districtFormMapper;
     private $districtAnalyzer;
     private $dataMapper;
@@ -92,8 +92,7 @@ class Container
             $this->districtController = new DistrictController(
                 $this->getDistrictDataMapper(),
                 $this->getDistrictFormMapper(),
-                $this->getGdanskAppDataMapper(),
-                $this->getKrakowAppDataMapper(),
+                $this->getCityAppDataMapperFactory(),
                 $this->getDistrictAnalyzer(),
                 $this->getDistrictFilter()
             );
@@ -109,20 +108,20 @@ class Container
         return self::$instance;
     }
 
-    private function getGdanskAppDataMapper(): GdanskAppDataMapper
+    private function getCityAppDataMapperFactory(): CityAppDataMapperFactory
     {
-        if ($this->gdanskAppDataMapper === null) {
-            $this->gdanskAppDataMapper = new GdanskAppDataMapper($this->getDistrictFactory());
+        if ($this->cityAppDataMapperFactory === null) {
+            $this->cityAppDataMapperFactory = new CityAppDataMapperFactory($this->getDistrictFactory(), $this->getCurlMultiManager());
         }
-        return $this->gdanskAppDataMapper;
+        return $this->cityAppDataMapperFactory;
     }
 
-    private function getKrakowAppDataMapper(): KrakowAppDataMapper
+    private function getCurlMultiManager(): CurlMultiManager
     {
-        if ($this->krakowAppDataMapper === null) {
-            $this->krakowAppDataMapper = new KrakowAppDataMapper($this->getDistrictFactory());
+        if ($this->curlMultiManager === null) {
+            $this->curlMultiManager = new CurlMultiManager();
         }
-        return $this->krakowAppDataMapper;
+        return $this->curlMultiManager;
     }
 
     private function getDistrictFormMapper(): DistrictFormMapper

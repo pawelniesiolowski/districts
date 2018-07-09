@@ -9,26 +9,20 @@ use DOMDocument;
 class KrakowAppDataMapper implements ExternalAppDataMapperInterface
 {
     private $districtFactory;
+    private $dataTransfer;
     private $city = 'Kraków';
     private $uri = 'http://appimeri.um.krakow.pl/app-pub-dzl/pages/DzlViewGlw.jsf?id=%d';
     private $minId = 1;
     private $maxId = 18;
     private $columnsNames = ['district_id', 'name', 'area', 'population', 'city'];
     private $headers;
-    private $curlOptions;
 
-    public function __construct(DistrictFactory $districtFactory)
+    public function __construct(DistrictFactory $districtFactory, DataTransferInterface $dataTransfer)
     {
         $this->districtFactory = $districtFactory;
-
+        $this->dataTransfer = $dataTransfer;
         $this->headers = [
             'Accept: text/html;charset=UTF-8'
-        ];
-
-        $this->curlOptions = [
-            CURLOPT_HEADER => false,
-            CURLOPT_HTTPHEADER => $this->headers,
-            CURLOPT_RETURNTRANSFER => true
         ];
     }
 
@@ -36,20 +30,20 @@ class KrakowAppDataMapper implements ExternalAppDataMapperInterface
     {
         $districtCollection = new DistrictCollection();
 
+        $this->dataTransfer->init();
+
         for ($i = $this->minId; $i <= $this->maxId; $i++) {
             $path = sprintf($this->uri, $i);
 
-            $ch = curl_init($path);
+            $this->dataTransfer->create($path, $this->headers);
+        }
 
-            curl_setopt_array($ch, $this->curlOptions);
+        $this->dataTransfer->execute();
 
-            $response = curl_exec($ch);
+        $data = $this->dataTransfer->getResults();
 
-            curl_close($ch);
-
-            $response = substr($response, 0, 3000);
-
-            $district = $this->districtFactory->createDistrict($this->parseResponse($response));
+        foreach ($data as $row) {
+            $district = $this->districtFactory->createDistrict($this->parseResponse($row));
             $districtCollection->add($district);
         }
 
@@ -58,6 +52,8 @@ class KrakowAppDataMapper implements ExternalAppDataMapperInterface
 
     private function parseResponse(string $response): array
     {
+        $response = substr($response, 0, 3000);
+
         $dom = new DOMDocument();
         libxml_use_internal_errors(true);
         $dom->loadHTML($response);

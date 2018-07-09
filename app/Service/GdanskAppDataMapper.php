@@ -8,39 +8,38 @@ use Districts\Model\DistrictCollection;
 class GdanskAppDataMapper implements ExternalAppDataMapperInterface
 {
     private $districtFactory;
+    private $dataTransfer;
     private $city = 'Gdańsk';
     private $uri = 'http://www.gdansk.pl/subpages/dzielnice/[dzielnice]/html/dzielnice_mapa_alert.php?id=%d';
     private $regExp = '/([^^]*)Powierzchnia:([\d,\s]*)[^^]*Liczba\s*ludności:([\d\s]*)/i';
     private $minId = 1;
     private $maxId = 34;
     private $columnsNames = ['district_id', 'name', 'area', 'population', 'city'];
-    private $curlOptions;
 
-    public function __construct(DistrictFactory $districtFactory)
+    public function __construct(DistrictFactory $districtFactory, DataTransferInterface $dataTransfer)
     {
         $this->districtFactory = $districtFactory;
-        $this->curlOptions = [
-            CURLOPT_HEADER => false,
-            CURLOPT_RETURNTRANSFER => true
-        ];
+        $this->dataTransfer = $dataTransfer;
     }
 
     public function get(): DistrictCollection
     {
         $districtCollection = new DistrictCollection();
 
+        $this->dataTransfer->init();
+
         for ($i = $this->minId; $i <= $this->maxId; $i++) {
             $path = sprintf($this->uri, $i);
 
-            $ch = curl_init($path);
+           $this->dataTransfer->create($path);
+        }
 
-            curl_setopt_array($ch, $this->curlOptions);
+        $this->dataTransfer->execute();
 
-            $response = curl_exec($ch);
+        $data = $this->dataTransfer->getResults();
 
-            curl_close($ch);
-
-            $district = $this->districtFactory->createDistrict($this->parseResponse($response));
+        foreach ($data as $row) {
+            $district = $this->districtFactory->createDistrict($this->parseResponse($row));
             $districtCollection->add($district);
         }
 
