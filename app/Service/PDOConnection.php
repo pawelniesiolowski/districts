@@ -17,7 +17,8 @@ class PDOConnection
             ]);
             $this->pdo->query('SET NAMES "utf8"');
         } catch (\PDOException $e) {
-            exit($e->getMessage() . PHP_EOL);
+            Logger::logException($e);
+            exit('Strona jest chwilowo niedostępna');
         }
     }
 

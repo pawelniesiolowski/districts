@@ -8,6 +8,7 @@ use Districts\Service\DistrictAnalyzer;
 use Districts\Service\DistrictDataMapper;
 use Districts\Service\DistrictFilterInterface;
 use Districts\Service\DistrictFormMapper;
+use Districts\Service\Logger;
 use Districts\Service\TextFormatter;
 
 class DistrictController implements ControllerInterface
@@ -38,7 +39,8 @@ class DistrictController implements ControllerInterface
         try {
             $districts = $this->districtDataMapper->findAll($orderBy);
         } catch (\Exception $e) {
-            exit($e->getMessage());
+            Logger::logException($e);
+            exit('Strona jest chwilowo niedostępna');
         }
 
         TextFormatter::convertCollectionSpecialChars($districts);
@@ -47,7 +49,9 @@ class DistrictController implements ControllerInterface
 
     public function delete(int $id)
     {
-        $this->districtDataMapper->deleteOne($id);
+        if (!$this->districtDataMapper->deleteOne($id)) {
+            Logger::logTextMessage('Invalid attempt to delete district');
+        }
         return header('Location: ./');
     }
 
@@ -61,7 +65,9 @@ class DistrictController implements ControllerInterface
                 $district = $this->districtFormMapper->getDistrict();
                 $this->districtAnalyzer->analyzeDistrict($district);
             } catch (\Exception $e) {
-                exit($e->getMessage());
+                Logger::logException($e);
+                header('Location: ./');
+                exit();
             }
         }
         return header('Location: ./');
@@ -75,7 +81,8 @@ class DistrictController implements ControllerInterface
             $this->districtAnalyzer->analyzeDistrictCollection($gdanskCollection);
             $this->districtAnalyzer->analyzeDistrictCollection($krakowCollection);
         } catch (\Exception $e) {
-            exit($e->getMessage());
+            Logger::logException($e);
+            exit('Nie udało się zaktualizować wszytkich danych');
         }
         if (!isset($_SERVER['argc'])) {
             header('Location: ./');
@@ -91,6 +98,7 @@ class DistrictController implements ControllerInterface
             $districtCondition = $this->districtFilter->getConditions($filter);
             $districts = $this->districtDataMapper->findAllByConditions($districtCondition);
         } catch (\Exception $e) {
+            Logger::logException($e);
             exit('[]');
         }
         $districtsResponse = $districts->getDistrictsArray();

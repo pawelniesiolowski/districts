@@ -9,6 +9,8 @@ if ($status == PHP_SESSION_NONE) {
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../core/config.php';
 
+$exceptionHandler = new \Districts\Service\ExceptionHandler();
+
 $container = \Districts\Service\Container::getInstance();
 
 try {
@@ -17,7 +19,8 @@ try {
     /** @var \Districts\Router\Router $router */
     $router = $container->resolve('Router');
 } catch(\Exception $e) {
-    exit($e->getMessage());
+    \Districts\Service\Logger::logException($e);
+    exit('Strona jest chwilowo niedostępna');
 }
 
 $router->run($parser, $controller);
