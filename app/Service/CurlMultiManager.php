@@ -6,14 +6,14 @@ namespace Districts\Service;
 class CurlMultiManager implements DataTransferInterface
 {
     private $multiHandler;
-    private $curlHandles = [];
+    private $curlHandlers = [];
     private $results = [];
     private $total = 0;
 
     public function init()
     {
         $this->multiHandler = curl_multi_init();
-        $this->curlHandles = [];
+        $this->curlHandlers = [];
         $this->results = [];
         $this->total = 0;
     }
@@ -32,9 +32,9 @@ class CurlMultiManager implements DataTransferInterface
         if (count($headers) > 0) {
             $options[CURLOPT_HTTPHEADER] = $headers;
         }
-        $this->curlHandles[$this->total] = curl_init($url);
-        curl_setopt_array($this->curlHandles[$this->total], $options);
-        curl_multi_add_handle($this->multiHandler, $this->curlHandles[$this->total]);
+        $this->curlHandlers[$this->total] = curl_init($url);
+        curl_setopt_array($this->curlHandlers[$this->total], $options);
+        curl_multi_add_handle($this->multiHandler, $this->curlHandlers[$this->total]);
         $this->total++;
     }
 
@@ -56,7 +56,7 @@ class CurlMultiManager implements DataTransferInterface
             } while ($mrc == CURLM_CALL_MULTI_PERFORM);
         }
 
-        foreach ($this->curlHandles as $number => $ch) {
+        foreach ($this->curlHandlers as $number => $ch) {
             $this->results[$number] = curl_multi_getcontent($ch);
             curl_multi_remove_handle($this->multiHandler, $ch);
         }
