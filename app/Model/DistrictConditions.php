@@ -29,21 +29,15 @@ class DistrictConditions implements \Iterator
         $paramName = ':' . $propertyName;
         $paramType = $this->createPDOType($value);
 
-        switch ($comparison) {
-            case 'LIKE':
-                $this->conditions[$this->total] = "$propertyName LIKE $paramName";
-                $value .= '%';
-                break;
-            default:
-                $this->conditions[$this->total] = "$propertyName = $paramName";
-        }
+        $this->createCondition($comparison, $propertyName, $paramName);
+        $value = $this->formatValue($comparison, $value);
 
         $this->PDOParams[$this->total] = new PDOParam($paramName, $value, $paramType);
         $this->total++;
         return $this;
     }
 
-    public function getConditions()
+    public function getConditions(): array
     {
         return $this->conditions;
     }
@@ -91,5 +85,33 @@ class DistrictConditions implements \Iterator
     public function rewind()
     {
         $this->pointer = 0;
+    }
+
+    /**
+     * @param string $comparison
+     * @param string $propertyName
+     * @param string $paramName
+     * @throws \Exception
+     */
+    private function createCondition(string $comparison, string $propertyName, string $paramName)
+    {
+        switch ($comparison) {
+            case 'LIKE':
+                $this->conditions[$this->total] = "$propertyName LIKE $paramName";
+                break;
+            case '=':
+                $this->conditions[$this->total] = "$propertyName = $paramName";
+                break;
+            default:
+                throw new \Exception('Invalid comparison given');
+        }
+    }
+
+    private function formatValue(string $comparison, $value)
+    {
+        if ($comparison === 'LIKE') {
+            $value .= '%';
+        }
+        return $value;
     }
 }
