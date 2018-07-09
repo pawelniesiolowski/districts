@@ -20,7 +20,8 @@ class Container
     private $uriParser;
     private $consoleArgsParser;
     private $districtController;
-    private $GdanskAppDataMapper;
+    private $gdanskAppDataMapper;
+    private $krakowAppDataMapper;
     private $districtFormMapper;
     private $districtAnalyzer;
     private $dataMapper;
@@ -92,6 +93,7 @@ class Container
                 $this->getDistrictDataMapper(),
                 $this->getDistrictFormMapper(),
                 $this->getGdanskAppDataMapper(),
+                $this->getKrakowAppDataMapper(),
                 $this->getDistrictAnalyzer(),
                 $this->getDistrictFilter()
             );
@@ -109,10 +111,18 @@ class Container
 
     private function getGdanskAppDataMapper(): GdanskAppDataMapper
     {
-        if ($this->GdanskAppDataMapper === null) {
-            $this->GdanskAppDataMapper = new GdanskAppDataMapper($this->getDistrictFactory());
+        if ($this->gdanskAppDataMapper === null) {
+            $this->gdanskAppDataMapper = new GdanskAppDataMapper($this->getDistrictFactory());
         }
-        return $this->GdanskAppDataMapper;
+        return $this->gdanskAppDataMapper;
+    }
+
+    private function getKrakowAppDataMapper(): KrakowAppDataMapper
+    {
+        if ($this->krakowAppDataMapper === null) {
+            $this->krakowAppDataMapper = new KrakowAppDataMapper($this->getDistrictFactory());
+        }
+        return $this->krakowAppDataMapper;
     }
 
     private function getDistrictFormMapper(): DistrictFormMapper

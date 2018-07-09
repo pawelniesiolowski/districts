@@ -8,6 +8,7 @@ use Districts\Service\DistrictDataMapper;
 use Districts\Service\DistrictFilter;
 use Districts\Service\DistrictFormMapper;
 use Districts\Service\GdanskAppDataMapper;
+use Districts\Service\KrakowAppDataMapper;
 use Districts\Service\TextFormatter;
 
 class DistrictController implements ControllerInterface
@@ -15,6 +16,7 @@ class DistrictController implements ControllerInterface
     private $districtDataMapper;
     private $districtFormMapper;
     private $gdanskAppDataMapper;
+    private $krakowAppDataMapper;
     private $districtAnalyzer;
     private $districtFilter;
 
@@ -22,6 +24,7 @@ class DistrictController implements ControllerInterface
         DistrictDataMapper $districtDataMapper,
         DistrictFormMapper $districtFormMapper,
         GdanskAppDataMapper $gdanskAppDataMapper,
+        KrakowAppDataMapper $krakowAppDataMapper,
         DistrictAnalyzer $districtAnalyzer,
         DistrictFilter $districtFilter
     )
@@ -29,6 +32,7 @@ class DistrictController implements ControllerInterface
         $this->districtDataMapper = $districtDataMapper;
         $this->districtFormMapper = $districtFormMapper;
         $this->gdanskAppDataMapper = $gdanskAppDataMapper;
+        $this->krakowAppDataMapper = $krakowAppDataMapper;
         $this->districtAnalyzer = $districtAnalyzer;
         $this->districtFilter = $districtFilter;
     }
@@ -69,9 +73,11 @@ class DistrictController implements ControllerInterface
 
     public function actualize()
     {
-        $districtCollection = $this->gdanskAppDataMapper->get();
+        $gdanskCollection = $this->gdanskAppDataMapper->get();
+        $krakowCollection = $this->krakowAppDataMapper->get();
         try {
-            $this->districtAnalyzer->analyzeDistrictCollection($districtCollection);
+            $this->districtAnalyzer->analyzeDistrictCollection($gdanskCollection);
+            $this->districtAnalyzer->analyzeDistrictCollection($krakowCollection);
         } catch (\Exception $e) {
             exit($e->getMessage());
         }

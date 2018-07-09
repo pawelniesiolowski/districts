@@ -14,10 +14,15 @@ class GdanskAppDataMapper implements ExternalAppDataMapperInterface
     private $minId = 1;
     private $maxId = 34;
     private $columnsNames = ['district_id', 'name', 'area', 'population', 'city'];
+    private $curlOptions;
 
     public function __construct(DistrictFactory $districtFactory)
     {
         $this->districtFactory = $districtFactory;
+        $this->curlOptions = [
+            CURLOPT_HEADER => false,
+            CURLOPT_RETURNTRANSFER => true
+        ];
     }
 
     public function get(): DistrictCollection
@@ -27,7 +32,13 @@ class GdanskAppDataMapper implements ExternalAppDataMapperInterface
         for ($i = $this->minId; $i <= $this->maxId; $i++) {
             $path = sprintf($this->uri, $i);
 
-            $response = file_get_contents($path);
+            $ch = curl_init($path);
+
+            curl_setopt_array($ch, $this->curlOptions);
+
+            $response = curl_exec($ch);
+
+            curl_close($ch);
 
             $district = $this->districtFactory->createDistrict($this->parseResponse($response));
             $districtCollection->add($district);
