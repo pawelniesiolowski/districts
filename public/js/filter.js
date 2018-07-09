@@ -16,9 +16,17 @@ function filter(e) {
     const xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
-            const table = document.getElementById('district-table');
-            const districtsResponse = JSON.parse(this.response);
-            let tableContent = `
+            show(this.response);
+        }
+    };
+    xmlhttp.open('GET', './filter?json=' + districtsRequest, true);
+    xmlhttp.send();
+}
+
+function show(response) {
+    const table = document.getElementById('district-table');
+    const districtsResponse = JSON.parse(response);
+    let tableContent = `
                 <tr>
                     <th><a href="./?sort=name">Nazwa</a></th>
                     <th><a href="./?sort=area">Powierzchnia</a></th>
@@ -26,8 +34,8 @@ function filter(e) {
                     <th><a href="./?sort=city">Miasto</a></th>
                     <th>Usuń</th>
                 </tr>`;
-            for (const d of districtsResponse) {
-                tableContent += `
+    for (const d of districtsResponse) {
+        tableContent += `
                     <tr>
                         <td>${d.name}</td>
                         <td>${d.area}</td>
@@ -35,10 +43,6 @@ function filter(e) {
                         <td>${d.city}</td>
                         <td><a href="./delete?id=${d.id}">X</a></td>
                     </tr>`;
-            }
-            table.innerHTML = tableContent;
-        }
-    };
-    xmlhttp.open('GET', './filter?json=' + districtsRequest, true);
-    xmlhttp.send();
+    }
+    table.innerHTML = tableContent;
 }
