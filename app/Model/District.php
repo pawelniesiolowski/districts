@@ -31,7 +31,7 @@ class District
         if ($district === null) {
             return false;
         }
-        return (($this->name === $district->name) && ($this->area === $district->area) &&
+        return (($this->name === $district->name) && (abs(($this->area-$district->area)/$district->area) < 0.00001) &&
             ($this->population === $district->population) && ($this->city === $district->city));
     }
 }
