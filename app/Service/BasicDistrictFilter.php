@@ -3,17 +3,16 @@
 namespace Districts\Service;
 
 
-use Districts\Model\District;
 use Districts\Model\DistrictConditions;
 
-class DistrictFilter
+class BasicDistrictFilter implements DistrictFilterInterface
 {
     /**
      * @param \stdClass $filter
      * @return DistrictConditions
      * @throws \Exception
      */
-    public function getDistrictConditions(\stdClass $filter): DistrictConditions
+    public function getConditions(\stdClass $filter): DistrictConditions
     {
         $districtCondition = new DistrictConditions();
         if (!empty($filter->name)) {

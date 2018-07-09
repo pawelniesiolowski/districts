@@ -6,7 +6,7 @@ namespace Districts\Controller;
 use Districts\Service\CityAppDataMapperFactory;
 use Districts\Service\DistrictAnalyzer;
 use Districts\Service\DistrictDataMapper;
-use Districts\Service\DistrictFilter;
+use Districts\Service\DistrictFilterInterface;
 use Districts\Service\DistrictFormMapper;
 use Districts\Service\TextFormatter;
 
@@ -23,7 +23,7 @@ class DistrictController implements ControllerInterface
         DistrictFormMapper $districtFormMapper,
         CityAppDataMapperFactory $cityAppDataMapperFactory,
         DistrictAnalyzer $districtAnalyzer,
-        DistrictFilter $districtFilter
+        DistrictFilterInterface $districtFilter
     )
     {
         $this->districtDataMapper = $districtDataMapper;
@@ -84,7 +84,7 @@ class DistrictController implements ControllerInterface
     {
         $filter = json_decode($json);
         try {
-            $districtCondition = $this->districtFilter->getDistrictConditions($filter);
+            $districtCondition = $this->districtFilter->getConditions($filter);
         } catch (\Exception $e) {
             exit('[]');
         }

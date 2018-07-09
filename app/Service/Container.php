@@ -202,7 +202,7 @@ class Container
     private function getDistrictFilter()
     {
         if ($this->districtFilter === null) {
-            $this->districtFilter = new DistrictFilter();
+            $this->districtFilter = new BasicDistrictFilter();
         }
         return $this->districtFilter;
     }
