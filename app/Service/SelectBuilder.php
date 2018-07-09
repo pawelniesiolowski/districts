@@ -11,7 +11,7 @@ class SelectBuilder
     private $orderBy = '';
     private $limit = '';
 
-    public function select(array $fields, string $table)
+    public function select(array $fields, string $table): self
     {
         $this->resetSelect();
         $fields = implode(', ', $fields);
@@ -19,7 +19,7 @@ class SelectBuilder
         return $this;
     }
 
-    public function join(array $tables, array $relations)
+    public function join(array $tables, array $relations): self
     {
         $numOfTables = count($tables);
         $numOfRelations = count($relations);
@@ -32,7 +32,7 @@ class SelectBuilder
         return $this;
     }
 
-    public function where(array $conditions)
+    public function where(array $conditions): self
     {
         if (count($conditions) > 0) {
             $conditions = implode(' AND ', $conditions);
@@ -41,7 +41,7 @@ class SelectBuilder
         return $this;
     }
 
-    public function orderBy(string $orderBy)
+    public function orderBy(string $orderBy): self
     {
         if (!empty($orderBy)) {
             $this->orderBy .= " ORDER BY $orderBy";
@@ -49,7 +49,7 @@ class SelectBuilder
         return $this;
     }
 
-    public function limit(int $limit)
+    public function limit(int $limit): self
     {
         if ($limit > 0) {
             $this->limit .= " LIMIT $limit";
