@@ -169,8 +169,8 @@ class DistrictDataMapper
         foreach ($districtCollection as $district) {
 
             $stmt->bindParam(':area',$district->area);
-            $stmt->bindParam(':population',$district->popuation, \PDO::PARAM_INT);
-            $stmt->bindParam(":id",$district->id, \PDO::PARAM_INT);
+            $stmt->bindParam(':population',$district->population, \PDO::PARAM_INT);
+            $stmt->bindParam(':id',$district->id, \PDO::PARAM_INT);
             $result = $stmt->execute();
             $stmt->closeCursor();
             if (!$result) {
