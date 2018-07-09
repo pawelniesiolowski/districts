@@ -1,3 +1,4 @@
 /vendor/
 .idea/
 /core/config.php
+/core/log.txt
