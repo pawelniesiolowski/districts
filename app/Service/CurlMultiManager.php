@@ -38,6 +38,9 @@ class CurlMultiManager implements DataTransferInterface
         $this->total++;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function execute()
     {
         $active = null;
@@ -57,8 +60,13 @@ class CurlMultiManager implements DataTransferInterface
         }
 
         foreach ($this->curlHandlers as $number => $ch) {
+            if (curl_errno($ch)) {
+                $message = 'Curl error: ' . curl_error($ch);
+                throw new \Exception($message);
+            }
             $this->results[$number] = curl_multi_getcontent($ch);
             curl_multi_remove_handle($this->multiHandler, $ch);
+            curl_close($ch);
         }
 
         curl_multi_close($this->multiHandler);
