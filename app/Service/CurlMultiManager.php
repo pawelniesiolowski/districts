@@ -44,16 +44,16 @@ class CurlMultiManager implements DataTransferInterface
 
         do {
             $mrc = curl_multi_exec($this->multiHandler, $active);
-        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+        } while ($mrc === CURLM_CALL_MULTI_PERFORM);
 
-        while ($active && $mrc == CURLM_OK) {
+        while ($active && $mrc === CURLM_OK) {
             if (curl_multi_select($this->multiHandler) === -1) {
                 usleep(1);
             }
 
             do {
                 $mrc = curl_multi_exec($this->multiHandler, $active);
-            } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+            } while ($mrc === CURLM_CALL_MULTI_PERFORM);
         }
 
         foreach ($this->curlHandlers as $number => $ch) {
