@@ -47,6 +47,12 @@ class Container
         $this->linksCollection->add('filter', new Link('DistrictController', 'filter', ['json' => '/[^^]/']));
     }
 
+    /**
+     * @param string $interface
+     * @param string $alias
+     * @return null
+     * @throws \Exception
+     */
     public function resolve(string $interface, string $alias = '')
     {
         $service = null;
@@ -54,6 +60,9 @@ class Container
             return (($class->interface === $interface) && ($class->alias === $alias));
         });
         $methodName = 'get' . array_pop($services)->class;
+        if (!method_exists($this, $methodName)) {
+            throw new \Exception("There is no $methodName method in Container");
+        }
         $service = $this->{$methodName}();
         return $service;
     }
@@ -194,16 +203,16 @@ class Container
         return $this->insertBuilder;
     }
 
-    private function addRegistry(string $interface, string $class, string $alias = ''): void
-    {
-        $this->registry[] = new Registry($interface, $class, $alias);
-    }
-
     private function getDistrictFilter()
     {
         if ($this->districtFilter === null) {
             $this->districtFilter = new BasicDistrictFilter();
         }
         return $this->districtFilter;
+    }
+
+    private function addRegistry(string $interface, string $class, string $alias = ''): void
+    {
+        $this->registry[] = new Registry($interface, $class, $alias);
     }
 }
