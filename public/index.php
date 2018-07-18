@@ -9,11 +9,10 @@ if ($status == PHP_SESSION_NONE) {
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../core/config.php';
 
-$exceptionHandler = new \Districts\Service\ExceptionHandler();
-
-$container = \Districts\Service\Container::getInstance();
+$container = new \Districts\Service\Container();
 
 try {
+    $exceptionHandler = $container->resolve('ExceptionHandler');
     $parser = $container->resolve('ParserInterface', isset($_SERVER['argc']) ? 'console' : 'website');
     $controller = $container->resolve('ControllerInterface');
     /** @var \Districts\Router\Router $router */

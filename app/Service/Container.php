@@ -13,9 +13,9 @@ use Districts\Router\UriParser;
 
 class Container
 {
-    private static $instance;
     private $registry = [];
     private $linksCollection;
+    private $exceptionHandler;
     private $router;
     private $uriParser;
     private $consoleArgsParser;
@@ -32,8 +32,9 @@ class Container
     private $insertBuilder;
     private $districtFilter;
 
-    private function __construct()
+    public function __construct()
     {
+        $this->addRegistry('ExceptionHandler', 'ExceptionHandler');
         $this->addRegistry('Router', 'Router');
         $this->addRegistry('ParserInterface', 'UriParser', 'website');
         $this->addRegistry('ParserInterface', 'ConsoleArgsParser', 'console');
@@ -65,6 +66,15 @@ class Container
         }
         $service = $this->{$methodName}();
         return $service;
+    }
+
+    /** @noinspection PhpUnusedPrivateMethodInspection */
+    private function getExceptionHandler(): ExceptionHandler
+    {
+        if ($this->exceptionHandler === null) {
+            $this->exceptionHandler = new ExceptionHandler();
+        }
+        return $this->exceptionHandler;
     }
 
     /** @noinspection PhpUnusedPrivateMethodInspection */
@@ -107,14 +117,6 @@ class Container
             );
         }
         return $this->districtController;
-    }
-
-    public static function getInstance(): Container
-    {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
     }
 
     private function getCityAppDataMapperFactory(): CityAppDataMapperFactory
