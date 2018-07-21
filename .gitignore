@@ -1,4 +1,4 @@
 /vendor/
 .idea/
-/core/config.php
+/core/my_db_credentials.php
 /core/log.txt
