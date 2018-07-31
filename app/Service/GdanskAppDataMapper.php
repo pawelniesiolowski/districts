@@ -10,7 +10,7 @@ class GdanskAppDataMapper implements ExternalAppDataMapperInterface
     private $districtFactory;
     private $dataTransfer;
     private $city = 'Gdańsk';
-    private $uri = 'http://www.gdansk.pl/subpages/dzielnice/[dzielnice]/html/dzielnice_mapa_alert.php?id=%d';
+    private $uri = 'https://www.gdansk.pl/subpages/dzielnice/[dzielnice]/html/dzielnice_mapa_alert.php?id=%d';
     private $regExp = '/([^^]*)Powierzchnia:([\d,\s]*)[^^]*Liczba\s*ludności:([\d\s]*)/i';
     private $minId = 1;
     private $maxId = 34;
