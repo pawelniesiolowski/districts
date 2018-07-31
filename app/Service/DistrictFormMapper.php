@@ -55,7 +55,7 @@ class DistrictFormMapper
         return $this->error->getError($property);
     }
 
-    private function isValidString(string $text = null, int $minLength, int $maxLength): bool
+    private function isValidString(string $text, int $minLength, int $maxLength): bool
     {
         if (empty($text)) {
             return false;
