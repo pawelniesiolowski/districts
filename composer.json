@@ -1,20 +1,30 @@
 {
-    "name": "pawel/districts",
-    "description": "An application that gets data about districts",
-    "type": "project",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "pawelniesiolowski",
-            "email": "pavel.niesiolowski@gmail.com"
-        }
-    ],
-    "autoload": {
-        "psr-4": {
-            "Districts\\": ["app/", "core/"]
-        }
-    },
-    "require": {}
+  "name": "pawel/districts",
+  "description": "An application that gets data about districts",
+  "type": "project",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "pawelniesiolowski",
+      "email": "pavel.niesiolowski@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Districts\\": [
+        "app/",
+        "core/"
+      ]
+    }
+  },
+  "require": {
+    "ext-PDO": "*",
+    "ext-curl": "*",
+    "ext-mbstring": "*",
+    "ext-dom": "*",
+    "ext-libxml": "*",
+    "ext-json": "*"
+  }
 }
 
 
