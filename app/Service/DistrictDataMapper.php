@@ -85,7 +85,8 @@ class DistrictDataMapper
 
         $stmt = $this->pdo->prepare($query);
 
-        foreach ($conditions as $param) {
+        $pdoParamsIterator = $conditions->getPDOParamsIterator();
+        foreach ($pdoParamsIterator as $param) {
             $stmt->bindParam($param->name,$param->value, $param->type);
         }
         $stmt->execute();
@@ -134,7 +135,8 @@ class DistrictDataMapper
     {
         $stmt = $this->createInsertStatement();
 
-        foreach ($districtCollection as $district) {
+        $districtCollectionIterator = $districtCollection->getIterator();
+        foreach ($districtCollectionIterator as $district) {
 
             $stmt->bindParam(':name',$district->name);
             $stmt->bindParam(':area',$district->area);
@@ -173,7 +175,8 @@ class DistrictDataMapper
     {
         $stmt = $this->createUpdateStatement();
 
-        foreach ($districtCollection as $district) {
+        $districtCollectionIterator = $districtCollection->getIterator();
+        foreach ($districtCollectionIterator as $district) {
 
             $stmt->bindParam(':area',$district->area);
             $stmt->bindParam(':population',$district->population, \PDO::PARAM_INT);

@@ -42,8 +42,8 @@ class DistrictController implements ControllerInterface
             Logger::logException($e);
             exit('Strona jest chwilowo niedostępna');
         }
-
-        TextFormatter::convertCollectionSpecialChars($districts);
+        $districtsIterator = $districts->getIterator();
+        TextFormatter::convertCollectionSpecialChars($districtsIterator);
         return require __DIR__ . '/../../public/templates/main_page.html.php';
     }
 
@@ -101,7 +101,6 @@ class DistrictController implements ControllerInterface
             Logger::logException($e);
             exit('[]');
         }
-        $districtsResponse = $districts->getDistrictsArray();
-        echo json_encode($districtsResponse);
+        echo $districts->jsonSerialize();
     }
 }

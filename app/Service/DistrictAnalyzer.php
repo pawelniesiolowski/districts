@@ -26,7 +26,7 @@ class DistrictAnalyzer
         $conditions->add('name', $district->name);
         $conditions->add('city', $district->city);
         $districtCollection = $this->districtDataMapper->findAllByConditions($conditions);
-        $districtFromDatabase = $districtCollection->getDistrict(0);
+        $districtFromDatabase = $districtCollection->getByIndex(0);
 
         if (is_null($districtFromDatabase)) {
             $this->districtDataMapper->insertOne($district);
@@ -42,7 +42,7 @@ class DistrictAnalyzer
      */
     public function analyzeDistrictCollection(DistrictCollection $districtCollection)
     {
-        $district = $districtCollection->getDistrict(0);
+        $district = $districtCollection->getByIndex(0);
 
         $conditions = new DistrictConditions();
         $conditions->add('city', $district->city);
@@ -50,7 +50,8 @@ class DistrictAnalyzer
         $insertCollection = new DistrictCollection();
         $updateCollection = new DistrictCollection();
 
-        foreach ($districtCollection as $district) {
+        $districtCollectionIterator = $districtCollection->getIterator();
+        foreach ($districtCollectionIterator as $district) {
             $districtFromDatabase = $databaseCollection->findByName($district->name);
 
             if (is_null($districtFromDatabase)) {
@@ -61,11 +62,11 @@ class DistrictAnalyzer
             }
         }
 
-        if (!is_null($insertCollection->getDistrict(0))) {
+        if (!is_null($insertCollection->getByIndex(0))) {
             $this->districtDataMapper->insertAll($insertCollection);
         }
 
-        if (!is_null($updateCollection->getDistrict(0))) {
+        if (!is_null($updateCollection->getByIndex(0))) {
             $this->districtDataMapper->updateAll($updateCollection);
         }
     }

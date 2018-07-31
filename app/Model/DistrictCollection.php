@@ -2,66 +2,42 @@
 
 namespace Districts\Model;
 
-
-class DistrictCollection implements \Iterator
+class DistrictCollection implements DistrictCollectionInterface, \JsonSerializable
 {
     private $districts = [];
     private $total = 0;
-    private $pointer = 0;
 
-    public function add(District $district)
+    public function add(District $district): void
     {
         $this->districts[$this->total] = $district;
         $this->total++;
     }
 
-    public function getDistrict(int $number): ?District
+    public function getByIndex(int $index): ?District
     {
-        if ($number < 0 || $number >= $this->total) {
-            return null;
+        if ($this->total > 0 && $index < $this->total) {
+            return $this->districts[$index];
         }
-        return $this->districts[$number];
+        return null;
     }
 
-    public function getDistrictsArray(): array
+    public function getIterator(): DistrictIterator
     {
-        return $this->districts;
-    }
-
-    public function current()
-    {
-        return $this->getDistrict($this->pointer);
-    }
-
-    public function next()
-    {
-        $district = $this->getDistrict($this->pointer);
-        if (!is_null($district)) {
-            $this->pointer++;
-        }
-    }
-
-    public function key()
-    {
-        return $this->pointer;
-    }
-
-    public function valid()
-    {
-        return (!is_null($this->getDistrict($this->pointer)));
-    }
-
-    public function rewind()
-    {
-        $this->pointer = 0;
+        return new DistrictIterator($this);
     }
 
     public function findByName(string $name): ?District
     {
-        $districts = array_filter($this->districts, function($district) use ($name) {
-           return $district->name === $name;
-        });
+        foreach ($this->districts as $district) {
+            if ($district->name === $name) {
+                return $district;
+            }
+        }
+        return null;
+    }
 
-        return array_pop($districts);
+    public function jsonSerialize()
+    {
+        return json_encode($this->districts);
     }
 }

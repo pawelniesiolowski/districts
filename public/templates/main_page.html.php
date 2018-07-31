@@ -20,7 +20,7 @@
                     <th><a href="./?sort=city">Miasto</a></th>
                     <th>Usuń</th>
                 </tr>
-                <?php foreach ($districts as $district): ?>
+                <?php foreach ($districtsIterator as $district): ?>
                 <tr>
                     <td><?= $district->name ?></td>
                     <td><?= $district->area ?></td>

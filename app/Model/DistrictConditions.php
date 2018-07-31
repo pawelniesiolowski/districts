@@ -3,14 +3,13 @@
 namespace Districts\Model;
 
 
-class DistrictConditions implements \Iterator
+class DistrictConditions
 {
     private $conditions = [];
     private $PDOParams = [];
     private $PDOTypes = ['integer' => \PDO::PARAM_INT];
     private $filteredProperties = ['name', 'area', 'population', 'city'];
     private $total = 0;
-    private $pointer = 0;
 
 
     /**
@@ -37,17 +36,22 @@ class DistrictConditions implements \Iterator
         return $this;
     }
 
+    public function getPDOParamsIterator(): PDOParamsIterator
+    {
+        return new PDOParamsIterator($this);
+    }
+
     public function getConditions(): array
     {
         return $this->conditions;
     }
 
-    public function getPDOParam(int $number): ?PDOParam
+    public function getPDOParamByIndex(int $index): ?PDOParam
     {
-        if ($number < 0 || $number >= $this->total) {
-            return null;
+        if ($this->total > 0 && $index < $this->total) {
+            return $this->PDOParams[$index];
         }
-        return $this->PDOParams[$number];
+        return null;
     }
 
     private function createPDOType($value): int
@@ -57,34 +61,6 @@ class DistrictConditions implements \Iterator
             return $this->PDOTypes[$type];
         }
         return \PDO::PARAM_STR;
-    }
-
-    public function current()
-    {
-        return $this->getPDOParam($this->pointer);
-    }
-
-    public function next()
-    {
-        $district = $this->getPDOParam($this->pointer);
-        if (!is_null($district)) {
-            $this->pointer++;
-        }
-    }
-
-    public function key()
-    {
-        return $this->pointer;
-    }
-
-    public function valid()
-    {
-        return (!is_null($this->getPDOParam($this->pointer)));
-    }
-
-    public function rewind()
-    {
-        $this->pointer = 0;
     }
 
     /**
